@@ -9,6 +9,12 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 20.18.0
+      - key: RESEND_API_KEY
+        sync: false
+      - key: CONTACT_NOTIFY_EMAIL
+        sync: false
+      - key: CONTACT_FROM_EMAIL
+        sync: false
 
   - type: web
     name: nexoria-storefront-backend

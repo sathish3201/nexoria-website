@@ -1,7 +1,10 @@
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
 import contactRouter from "./routes/contact.js";
 import contentRouter from "./routes/content.js";
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;

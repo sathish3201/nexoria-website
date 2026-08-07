@@ -2,6 +2,7 @@ import { Router } from "express";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { Resend } from "resend";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SUBMISSIONS_DIR = path.join(__dirname, "..", "submissions");
@@ -11,6 +12,30 @@ if (!fs.existsSync(SUBMISSIONS_DIR)) fs.mkdirSync(SUBMISSIONS_DIR, { recursive: 
 if (!fs.existsSync(SUBMISSIONS_FILE)) fs.writeFileSync(SUBMISSIONS_FILE, "[]");
 
 const router = Router();
+
+async function sendNotificationEmail(submission) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const notifyTo = process.env.CONTACT_NOTIFY_EMAIL;
+  if (!apiKey || !notifyTo) return;
+
+  const resend = new Resend(apiKey);
+  try {
+    await resend.emails.send({
+      from: process.env.CONTACT_FROM_EMAIL || "Nexoria Website <onboarding@resend.dev>",
+      to: notifyTo,
+      reply_to: submission.email,
+      subject: `New inquiry: ${submission.service} — ${submission.name}`,
+      text: `Name: ${submission.name}
+Email: ${submission.email}
+Company: ${submission.company || "—"}
+Service: ${submission.service}
+
+${submission.message}`,
+    });
+  } catch (err) {
+    console.error("Failed to send contact notification email:", err.message);
+  }
+}
 
 // POST /api/contact - receive a lead/contact form submission
 router.post("/", (req, res) => {
@@ -45,6 +70,8 @@ router.post("/", (req, res) => {
     console.error("Failed to persist submission:", err);
     return res.status(500).json({ error: "Something went wrong saving your message. Please try again." });
   }
+
+  sendNotificationEmail(submission);
 
   return res.status(201).json({
     message: "Thanks for reaching out! We'll get back to you within 1 business day.",
