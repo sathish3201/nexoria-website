@@ -30,4 +30,6 @@ export const api = {
       headers: { "x-admin-token": token },
       body: JSON.stringify({ stock }),
     }),
+  sendChatMessage: (message) =>
+    request("/chat", { method: "POST", body: JSON.stringify({ message }) }).then((data) => data.reply),
 };

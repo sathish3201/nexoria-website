@@ -80,10 +80,10 @@ function buildKnowledgeBase() {
   }
 
   for (const faq of FAQ_ENTRIES) {
-    entries.push({ keywords: faq.keywords.join(" "), answer: faq.answer });
+    entries.push({ keywords: faq.keywords.join(" "), answer: faq.answer, priority: 2 });
   }
 
-  return entries.map((e) => ({ ...e, tokens: tokenize(e.keywords) }));
+  return entries.map((e) => ({ ...e, priority: e.priority || 1, tokens: tokenize(e.keywords) }));
 }
 
 const STOPWORDS = new Set([
@@ -99,7 +99,17 @@ function tokenize(text) {
     .filter((t) => t.length > 1 && !STOPWORDS.has(t));
 }
 
-function findBestMatch(message, knowledgeBase) {
+function buildDocumentFrequency(knowledgeBase) {
+  const freq = new Map();
+  for (const entry of knowledgeBase) {
+    for (const token of new Set(entry.tokens)) {
+      freq.set(token, (freq.get(token) || 0) + 1);
+    }
+  }
+  return freq;
+}
+
+function findBestMatch(message, knowledgeBase, documentFrequency) {
   const messageTokens = tokenize(message);
   if (messageTokens.length === 0) return null;
 
@@ -107,14 +117,23 @@ function findBestMatch(message, knowledgeBase) {
   let bestScore = 0;
 
   for (const entry of knowledgeBase) {
-    const overlap = messageTokens.filter((t) => entry.tokens.includes(t)).length;
-    if (overlap > bestScore) {
-      bestScore = overlap;
+    const matched = messageTokens.filter((t) => entry.tokens.includes(t));
+    if (matched.length === 0) continue;
+
+    // Weight rare, distinctive tokens more than common ones (e.g. "database"
+    // matters more than "skills"), and boost curated FAQ entries so a sparse
+    // query doesn't fall through to a longer answer that only shares one
+    // incidental word.
+    const score =
+      matched.reduce((sum, t) => sum + 1 / (documentFrequency.get(t) || 1), 0) * entry.priority;
+
+    if (score > bestScore) {
+      bestScore = score;
       best = entry;
     }
   }
 
-  return bestScore > 0 ? best : null;
+  return best;
 }
 
 const FALLBACK_ANSWER =
@@ -138,7 +157,8 @@ router.post("/", (req, res) => {
     return res.status(500).json({ error: "Could not load site content." });
   }
 
-  const match = findBestMatch(trimmedMessage, knowledgeBase);
+  const documentFrequency = buildDocumentFrequency(knowledgeBase);
+  const match = findBestMatch(trimmedMessage, knowledgeBase, documentFrequency);
   const reply = match ? match.answer : FALLBACK_ANSWER;
 
   return res.json({ reply });

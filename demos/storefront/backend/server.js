@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import productsRouter from "./routes/products.js";
 import checkoutRouter from "./routes/checkout.js";
 import adminRouter from "./routes/admin.js";
+import chatRouter from "./routes/chat.js";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/products", productsRouter);
 app.use("/api/checkout", checkoutRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/chat", chatRouter);
 
 app.listen(PORT, () => {
   console.log(`Nexoria storefront backend running on http://localhost:${PORT}`);
