@@ -41,7 +41,7 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_BASE
-        value: https://nexoria-backend.onrender.com/api
+        value: https://nexoria-backend-og2p.onrender.com/api
     routes:
       - type: rewrite
         source: /*
