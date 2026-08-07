@@ -1,0 +1,17 @@
+{
+  "name": "nexoria-storefront-backend",
+  "version": "1.0.0",
+  "description": "Storefront demo API for Nexoria Technologies portfolio (products, cart checkout via Razorpay test mode, admin inventory)",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "razorpay": "^2.9.4"
+  }
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "sample-01",
+    "title": "E-Commerce Storefront (Concept)",
+    "category": "Full-Stack Development",
+    "description": "Sample concept build: a React + Node storefront with cart, checkout, and an admin dashboard for inventory management.",
+    "tags": ["React", "Node.js", "PostgreSQL", "Stripe"],
+    "status": "Concept / template — replace with real client work as projects ship."
+  },
+  {
+    "id": "sample-02",
+    "title": "Field Service Mobile App (Concept)",
+    "category": "App Development",
+    "description": "Sample concept build: a React Native app for field technicians to log jobs offline and sync when back online.",
+    "tags": ["React Native", "Offline sync", "REST API"],
+    "status": "Concept / template — replace with real client work as projects ship."
+  },
+  {
+    "id": "sample-03",
+    "title": "Sales Data Pipeline & Dashboard (Concept)",
+    "category": "Data Engineering & Analytics",
+    "description": "Sample concept build: an automated ETL pipeline pulling from CRM and billing systems into a warehouse, feeding a BI dashboard.",
+    "tags": ["Python", "ETL", "Data Warehouse", "BI Dashboard"],
+    "status": "Concept / template — replace with real client work as projects ship."
+  }
+]

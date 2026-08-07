@@ -1,0 +1,50 @@
+[
+  {
+    "id": "sku-001",
+    "name": "Trailhead Canvas Backpack",
+    "description": "Water-resistant 22L canvas backpack with padded laptop sleeve.",
+    "priceInPaise": 349900,
+    "image": "https://placehold.co/600x600/1f2937/ffffff?text=Backpack",
+    "stock": 14
+  },
+  {
+    "id": "sku-002",
+    "name": "Ceramic Pour-Over Set",
+    "description": "Hand-glazed ceramic dripper with matching 500ml carafe.",
+    "priceInPaise": 179900,
+    "image": "https://placehold.co/600x600/1f2937/ffffff?text=Pour-Over",
+    "stock": 22
+  },
+  {
+    "id": "sku-003",
+    "name": "Merino Wool Beanie",
+    "description": "Lightweight merino wool beanie, one size fits most.",
+    "priceInPaise": 99900,
+    "image": "https://placehold.co/600x600/1f2937/ffffff?text=Beanie",
+    "stock": 40
+  },
+  {
+    "id": "sku-004",
+    "name": "Recycled Steel Water Bottle",
+    "description": "750ml insulated bottle made from recycled stainless steel.",
+    "priceInPaise": 129900,
+    "image": "https://placehold.co/600x600/1f2937/ffffff?text=Bottle",
+    "stock": 31
+  },
+  {
+    "id": "sku-005",
+    "name": "Desk Plant Trio",
+    "description": "Three low-maintenance succulents in matching concrete pots.",
+    "priceInPaise": 149900,
+    "image": "https://placehold.co/600x600/1f2937/ffffff?text=Plants",
+    "stock": 18
+  },
+  {
+    "id": "sku-006",
+    "name": "Notebook & Pen Set",
+    "description": "Dot-grid hardcover notebook with matching brass pen.",
+    "priceInPaise": 89900,
+    "image": "https://placehold.co/600x600/1f2937/ffffff?text=Notebook",
+    "stock": 50
+  }
+]

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "starter",
+    "name": "Starter",
+    "priceLabel": "From $1,500",
+    "cadence": "one-time",
+    "bestFor": "Small businesses that need a professional web presence.",
+    "features": [
+      "Up to 5-page responsive website",
+      "Basic SEO setup",
+      "Contact form integration",
+      "2 rounds of revisions",
+      "2 weeks delivery"
+    ],
+    "highlighted": false
+  },
+  {
+    "id": "growth",
+    "name": "Growth",
+    "priceLabel": "From $5,000",
+    "cadence": "project-based",
+    "bestFor": "Businesses that need a full-stack web or mobile application.",
+    "features": [
+      "Custom full-stack application",
+      "Database & API design",
+      "Admin dashboard",
+      "Cloud deployment & CI/CD",
+      "4 weeks delivery + 30 days support"
+    ],
+    "highlighted": true
+  },
+  {
+    "id": "enterprise",
+    "name": "Enterprise / Data",
+    "priceLabel": "Custom quote",
+    "cadence": "retainer or project",
+    "bestFor": "Organizations that need data pipelines, analytics, or ongoing IT support.",
+    "features": [
+      "Data pipeline design & orchestration",
+      "Analytics dashboards & reporting",
+      "Ongoing IT support & DevOps",
+      "Dedicated point of contact",
+      "SLA-backed support"
+    ],
+    "highlighted": false
+  }
+]

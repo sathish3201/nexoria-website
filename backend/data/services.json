@@ -1,0 +1,44 @@
+[
+  {
+    "id": "web-development",
+    "title": "Website Development",
+    "summary": "Fast, responsive, SEO-friendly websites built with modern frameworks.",
+    "details": "From marketing sites to content-heavy portals, we design and build websites that load fast, rank well, and are easy for your team to maintain.",
+    "highlights": ["Responsive design", "SEO fundamentals", "CMS integration", "Performance optimization"]
+  },
+  {
+    "id": "full-stack-development",
+    "title": "Full-Stack Development",
+    "summary": "End-to-end web applications — frontend, backend, database, and deployment.",
+    "details": "We design and build complete web applications using React, Node.js, and modern databases, handling everything from architecture to deployment and monitoring.",
+    "highlights": ["React / Node.js", "REST & GraphQL APIs", "Database design", "Cloud deployment"]
+  },
+  {
+    "id": "app-development",
+    "title": "App Development",
+    "summary": "Cross-platform mobile and desktop apps that feel native.",
+    "details": "We build iOS, Android, and cross-platform applications with a shared codebase where it makes sense, prioritizing performance and a clean user experience.",
+    "highlights": ["iOS & Android", "Cross-platform (React Native)", "App store deployment", "Push notifications & auth"]
+  },
+  {
+    "id": "it-services",
+    "title": "IT Services & Consulting",
+    "summary": "Ongoing technical support, infrastructure, and strategy for growing teams.",
+    "details": "Cloud setup, DevOps, system integrations, and technical advisory so your team can focus on the business instead of infrastructure fires.",
+    "highlights": ["Cloud infrastructure", "DevOps & CI/CD", "System integration", "Technical advisory"]
+  },
+  {
+    "id": "data-pipelines",
+    "title": "Data Pipeline Engineering",
+    "summary": "Reliable ETL/ELT pipelines that move and transform your data automatically.",
+    "details": "We design pipelines that extract data from your sources, clean and transform it, and load it where your team needs it — on a schedule you can trust.",
+    "highlights": ["ETL / ELT design", "Workflow orchestration", "Data warehousing", "Automated scheduling"]
+  },
+  {
+    "id": "data-analytics",
+    "title": "Data Analysis & BI",
+    "summary": "Turn raw data into dashboards and insights your team can act on.",
+    "details": "From exploratory analysis to production dashboards, we help you understand what your data is telling you and track the metrics that matter.",
+    "highlights": ["Dashboards & reporting", "Exploratory analysis", "KPI tracking", "Data visualization"]
+  }
+]
