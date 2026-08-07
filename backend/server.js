@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import contactRouter from "./routes/contact.js";
 import contentRouter from "./routes/content.js";
+import chatRouter from "./routes/chat.js";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/contact", contactRouter);
+app.use("/api/chat", chatRouter);
 app.use("/api", contentRouter);
 
 app.listen(PORT, () => {
