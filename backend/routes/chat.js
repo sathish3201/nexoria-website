@@ -43,34 +43,89 @@ const FAQ_ENTRIES = [
   },
 ];
 
+// Small local models (Gemma 3 1B, quantized) fall apart — repeating
+// tokens or producing incoherent output — when handed a long, dense
+// system prompt. Dumping the ENTIRE services + pricing + FAQ list into
+// every request (~790 tokens) reliably broke Gemma in testing. Instead,
+// keep the injected context small by only including the handful of
+// entries actually relevant to what the visitor asked, with a compact
+// (not full-dump) fallback for generic/unmatched questions.
+const STOPWORDS = new Set([
+  "the", "a", "an", "and", "or", "but", "is", "are", "was", "were", "be",
+  "been", "being", "to", "of", "in", "on", "at", "for", "with", "about",
+  "as", "by", "from", "into", "like", "through", "after", "over",
+  "between", "out", "against", "during", "without", "before", "under",
+  "around", "among", "i", "you", "he", "she", "it", "we", "they", "what",
+  "which", "who", "whom", "this", "that", "these", "those", "am", "do",
+  "does", "did", "doing", "will", "would", "should", "could", "can",
+  "may", "might", "must", "shall", "not", "your", "my", "our", "their",
+  "his", "her", "its", "me", "us", "them", "how", "if", "just", "want",
+]);
+
+function extractKeywords(text) {
+  return new Set(
+    String(text)
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter((w) => w.length > 2 && !STOPWORDS.has(w))
+  );
+}
+
+function scoreText(text, keywords) {
+  const words = extractKeywords(text);
+  let score = 0;
+  for (const w of words) {
+    if (keywords.has(w)) score++;
+  }
+  return score;
+}
+
 // Builds a compact, plain-text summary of the site's real business
-// content (services, pricing, FAQ) to inject into the model's system
-// prompt — this is what lets a small local model (Gemma/Phi) answer
-// with accurate, Nexoria-specific information instead of generic text.
-function buildKnowledgeSummary() {
+// content (services, pricing, FAQ), trimmed to what's relevant to the
+// visitor's actual message — this is what lets a small local model
+// (Gemma/Phi) answer with accurate, Nexoria-specific information
+// without the context getting long enough to make it incoherent.
+function buildKnowledgeSummary(userMessage) {
   const services = readJSON("services.json");
   const pricing = readJSON("pricing.json");
+  const keywords = extractKeywords(userMessage);
 
-  const servicesText = services
-    .map((s) => `- ${s.title}: ${s.summary} (${s.highlights.join(", ")})`)
-    .join("\n");
+  const scoredServices = services
+    .map((s) => ({ item: s, score: scoreText(`${s.title} ${s.summary} ${s.highlights.join(" ")}`, keywords) }))
+    .sort((a, b) => b.score - a.score);
+  const scoredPricing = pricing
+    .map((p) => ({ item: p, score: scoreText(`${p.name} ${p.bestFor} ${p.features.join(" ")}`, keywords) }))
+    .sort((a, b) => b.score - a.score);
+  const scoredFaq = FAQ_ENTRIES
+    .map((f) => ({ item: f, score: scoreText(`${f.question} ${f.answer}`, keywords) }))
+    .sort((a, b) => b.score - a.score);
 
-  const pricingText = pricing
-    .map(
-      (p) =>
-        `- ${p.name} (${p.priceLabel}, ${p.cadence}): best for ${p.bestFor} Includes: ${p.features.join(", ")}.`
-    )
-    .join("\n");
+  const relevantServices = scoredServices.filter((s) => s.score > 0).slice(0, 2).map((s) => s.item);
+  const relevantPricing = scoredPricing.filter((p) => p.score > 0).slice(0, 2).map((p) => p.item);
+  const relevantFaq = scoredFaq.filter((f) => f.score > 0).slice(0, 2).map((f) => f.item);
 
-  const faqText = FAQ_ENTRIES.map((f) => `- Q: ${f.question}\n  A: ${f.answer}`).join("\n");
+  const servicesText = relevantServices.length
+    ? relevantServices.map((s) => `- ${s.title}: ${s.summary} (${s.highlights.join(", ")})`).join("\n")
+    : `- We offer: ${services.map((s) => s.title).join(", ")}.`;
+
+  const pricingText = relevantPricing.length
+    ? relevantPricing
+        .map((p) => `- ${p.name} (${p.priceLabel}, ${p.cadence}): best for ${p.bestFor} Includes: ${p.features.join(", ")}.`)
+        .join("\n")
+    : `- Plans: ${pricing.map((p) => `${p.name} (${p.priceLabel})`).join(", ")}.`;
+
+  const faqText = relevantFaq.length
+    ? relevantFaq.map((f) => `- Q: ${f.question}\n  A: ${f.answer}`).join("\n")
+    : "- (Ask about services, pricing, or how to get started for more detail.)";
 
   return `SERVICES OFFERED:\n${servicesText}\n\nPRICING PLANS:\n${pricingText}\n\nFREQUENTLY ASKED QUESTIONS:\n${faqText}`;
 }
 
-function buildSystemPrompt() {
+function buildSystemPrompt(userMessage) {
   return `You are Nexo AI, the chat assistant on the Nexoria Technologies website. Answer visitor questions using ONLY the business information below. Be concise (2-4 sentences unless more detail is clearly needed). If a question isn't covered by this information, say you don't have that specific detail and point the visitor to the Contact page. Never invent pricing, services, or policies that aren't listed here.
 
-${buildKnowledgeSummary()}`;
+${buildKnowledgeSummary(userMessage)}`;
 }
 
 const FALLBACK_ANSWER =
@@ -100,7 +155,7 @@ router.post("/", async (req, res) => {
 
   let systemPrompt;
   try {
-    systemPrompt = buildSystemPrompt();
+    systemPrompt = buildSystemPrompt(trimmedMessage);
   } catch (err) {
     console.error("Failed to build chat knowledge base:", err.message);
     return res.status(500).json({ error: "Could not load site content." });
