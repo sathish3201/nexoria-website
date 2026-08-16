@@ -118,6 +118,63 @@ router.post("/", async (req, res) => {
     { role: "user", content: trimmedMessage },
   ];
 
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 60_000);
+
+    // llama-server has no API key check of its own — the phone's ngrok
+    // tunnel is what's protected, via HTTP Basic Auth (see start.sh),
+    // not a Bearer token. Send Basic Auth with "apikey" as the username
+    // and the API key as the password to match that.
+    const basicAuth = Buffer.from(`apikey:${modelApiKey}`).toString("base64");
+
+    const response = await fetch(`${modelUrl.replace(/\/$/, "")}/v1/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Basic ${basicAuth}`,
+      },
+      body: JSON.stringify({
+        model: modelName,
+        messages,
+        temperature: 0.4,
+        max_tokens: 150,
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+
+    if (!response.ok) {
+      console.error("Local model request failed:", response.status, await response.text().catch(() => ""));
+      return res.status(200).json({ reply: UNAVAILABLE_ANSWER });
+    }
+
+    const data = await response.json();
+    const reply = data?.choices?.[0]?.message?.content?.trim();
+
+    if (!reply) {
+      return res.status(200).json({ reply: FALLBACK_ANSWER });
+    }
+
+    return res.json({ reply });
+  } catch (err) {
+    console.error("Error calling local model:", err.message);
+    return res.status(200).json({ reply: UNAVAILABLE_ANSWER });
+  }
+});
+
+export default router;
+  // in OpenAI chat-completions shape, so it's forwarded as-is.
+  const priorTurns = Array.isArray(history)
+    ? history.filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
+    : [];
+
+  const messages = [
+    { role: "system", content: systemPrompt },
+    ...priorTurns,
+    { role: "user", content: trimmedMessage },
+  ];
+
   /*try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30_000);
