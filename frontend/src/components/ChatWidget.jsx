@@ -19,7 +19,17 @@ export default function ChatWidget() {
     const text = input.trim();
     if (!text || sending) return;
 
-    const history = messages.map(({ role, content }) => ({ role, content }));
+    // GREETING is a canned UI bubble, not a real conversation turn — the
+    // model's chat template (Gemma) requires the turn sequence to start
+    // with "user" and strictly alternate user/assistant from there.
+    // Sending GREETING as history makes every first message start with
+    // "assistant", which the template hard-rejects with a 400. Exclude
+    // it from what gets sent as history (by reference — it's a stable
+    // module-level constant, so this reliably matches only the greeting
+    // bubble and nothing else).
+    const history = messages
+      .filter((m) => m !== GREETING)
+      .map(({ role, content }) => ({ role, content }));
     const nextMessages = [...messages, { role: "user", content: text }];
     setMessages(nextMessages);
     setInput("");
@@ -80,3 +90,4 @@ export default function ChatWidget() {
     </div>
   );
 }
+
