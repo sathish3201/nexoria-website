@@ -21,6 +21,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/products", productsRouter);
 app.use("/api/checkout", checkoutRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/portfolio-chat", portfolioChatRouter);
 app.use("/api/chat", chatRouter);
 
 app.listen(PORT, () => {
