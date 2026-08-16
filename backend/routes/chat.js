@@ -118,7 +118,27 @@ router.post("/", async (req, res) => {
     { role: "user", content: trimmedMessage },
   ];
 
-  try {
+  /*try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30_000);
+
+    const response = await fetch(`${modelUrl.replace(/\/$/, "")}/v1/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${modelApiKey}`,
+      },
+      body: JSON.stringify({
+        model: modelName,
+        messages,
+        temperature: 0.4,
+        max_tokens: 300,
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);*/
+
+    try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30_000);
 
