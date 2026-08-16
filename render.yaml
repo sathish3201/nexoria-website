@@ -15,6 +15,12 @@ services:
         sync: false
       - key: CONTACT_FROM_EMAIL
         sync: false
+      - key: LOCAL_MODEL_URL
+        sync: false
+      - key: LOCAL_MODEL_API_KEY
+        sync: false
+      - key: LOCAL_MODEL_NAME
+        sync: false
 
   - type: web
     name: nexoria-storefront-backend

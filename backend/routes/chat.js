@@ -12,156 +12,149 @@ function readJSON(file) {
 
 const FAQ_ENTRIES = [
   {
-    keywords: ["safe", "security", "secure", "data", "privacy", "protect"],
+    question: "Is my data safe / secure?",
     answer:
       "All code and systems are built directly in your own secure cloud accounts, we sign NDAs before any project details are shared, and we use modern end-to-end encryption standards throughout.",
   },
   {
-    keywords: ["own", "ownership", "ip", "intellectual property", "code belong"],
+    question: "Who owns the code / IP after the project?",
     answer:
       "Once a project is completed, 100% of the intellectual property, repository access, and database credentials belong exclusively to you.",
   },
   {
-    keywords: ["mobile", "app", "ios", "android", "react native"],
+    question: "Do you build mobile apps?",
     answer:
       "Yes — we use React Native to build cross-platform mobile apps for iOS and Android, saving time and cost while maintaining near-native performance.",
   },
   {
-    keywords: ["hidden fee", "hidden cost", "extra cost", "surprise"],
+    question: "Are there hidden fees?",
     answer:
       "No hidden fees. We use fixed-scope proposals: once scope, cost, and timeline are agreed on, the price is locked with no surprise invoices.",
   },
   {
-    keywords: ["get started", "start a project", "how do i begin", "hire", "work with you"],
+    question: "How do I get started / hire you?",
     answer:
       "Head to the Contact page to fill out the form, or reach out directly, and we'll get back to you with a fixed-scope proposal.",
   },
   {
-    keywords: ["contact", "reach", "email", "phone", "talk"],
+    question: "How can I contact you?",
     answer:
       "You can reach us through the Contact page — submit the form there and we'll get back to you, typically within 1 business day.",
   },
 ];
 
-function buildKnowledgeBase() {
+// Builds a compact, plain-text summary of the site's real business
+// content (services, pricing, FAQ) to inject into the model's system
+// prompt — this is what lets a small local model (Gemma/Phi) answer
+// with accurate, Nexoria-specific information instead of generic text.
+function buildKnowledgeSummary() {
   const services = readJSON("services.json");
   const pricing = readJSON("pricing.json");
-  const portfolio = readJSON("portfolio.json");
-  const blog = readJSON("blog.json");
 
-  const entries = [];
+  const servicesText = services
+    .map((s) => `- ${s.title}: ${s.summary} (${s.highlights.join(", ")})`)
+    .join("\n");
 
-  for (const s of services) {
-    entries.push({
-      keywords: [s.title, s.summary, ...s.highlights].join(" "),
-      answer: `${s.title}: ${s.summary} ${s.details}`,
-    });
-  }
+  const pricingText = pricing
+    .map(
+      (p) =>
+        `- ${p.name} (${p.priceLabel}, ${p.cadence}): best for ${p.bestFor} Includes: ${p.features.join(", ")}.`
+    )
+    .join("\n");
 
-  for (const p of pricing) {
-    entries.push({
-      keywords: [p.name, "pricing", "price", "cost", p.priceLabel, p.bestFor, ...p.features].join(" "),
-      answer: `${p.name} (${p.priceLabel}, ${p.cadence}): best for ${p.bestFor} Includes: ${p.features.join(", ")}.`,
-    });
-  }
+  const faqText = FAQ_ENTRIES.map((f) => `- Q: ${f.question}\n  A: ${f.answer}`).join("\n");
 
-  for (const p of portfolio) {
-    entries.push({
-      keywords: [p.title, p.category, p.description, ...p.tags].join(" "),
-      answer: `${p.title} (${p.category}): ${p.description}`,
-    });
-  }
-
-  for (const b of blog) {
-    entries.push({
-      keywords: [b.title, b.excerpt, ...b.tags].join(" "),
-      answer: `From our blog, "${b.title}": ${b.excerpt}`,
-    });
-  }
-
-  for (const faq of FAQ_ENTRIES) {
-    entries.push({ keywords: faq.keywords.join(" "), answer: faq.answer, priority: 2 });
-  }
-
-  return entries.map((e) => ({ ...e, priority: e.priority || 1, tokens: tokenize(e.keywords) }));
+  return `SERVICES OFFERED:\n${servicesText}\n\nPRICING PLANS:\n${pricingText}\n\nFREQUENTLY ASKED QUESTIONS:\n${faqText}`;
 }
 
-const STOPWORDS = new Set([
-  "the", "a", "an", "is", "are", "do", "does", "you", "your", "i", "we", "what",
-  "how", "can", "will", "to", "of", "for", "in", "on", "and", "or", "with",
-]);
+function buildSystemPrompt() {
+  return `You are Nexo AI, the chat assistant on the Nexoria Technologies website. Answer visitor questions using ONLY the business information below. Be concise (2-4 sentences unless more detail is clearly needed). If a question isn't covered by this information, say you don't have that specific detail and point the visitor to the Contact page. Never invent pricing, services, or policies that aren't listed here.
 
-function tokenize(text) {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .split(/\s+/)
-    .filter((t) => t.length > 1 && !STOPWORDS.has(t));
-}
-
-function buildDocumentFrequency(knowledgeBase) {
-  const freq = new Map();
-  for (const entry of knowledgeBase) {
-    for (const token of new Set(entry.tokens)) {
-      freq.set(token, (freq.get(token) || 0) + 1);
-    }
-  }
-  return freq;
-}
-
-function findBestMatch(message, knowledgeBase, documentFrequency) {
-  const messageTokens = tokenize(message);
-  if (messageTokens.length === 0) return null;
-
-  let best = null;
-  let bestScore = 0;
-
-  for (const entry of knowledgeBase) {
-    const matched = messageTokens.filter((t) => entry.tokens.includes(t));
-    if (matched.length === 0) continue;
-
-    // Weight rare, distinctive tokens more than common ones (e.g. "database"
-    // matters more than "skills"), and boost curated FAQ entries so a sparse
-    // query doesn't fall through to a longer answer that only shares one
-    // incidental word.
-    const score =
-      matched.reduce((sum, t) => sum + 1 / (documentFrequency.get(t) || 1), 0) * entry.priority;
-
-    if (score > bestScore) {
-      bestScore = score;
-      best = entry;
-    }
-  }
-
-  return best;
+${buildKnowledgeSummary()}`;
 }
 
 const FALLBACK_ANSWER =
   "I don't have a specific answer for that yet. For anything beyond our services, pricing, or portfolio, please reach out on the Contact page (/contact) and our team will get back to you directly.";
 
+const UNAVAILABLE_ANSWER =
+  "Nexo AI is temporarily unavailable. Please try again in a moment, or reach out on the Contact page and our team will get back to you directly.";
+
 const router = Router();
 
-router.post("/", (req, res) => {
-  const { message } = req.body;
+router.post("/", async (req, res) => {
+  const { message, history } = req.body;
   const trimmedMessage = typeof message === "string" ? message.trim() : "";
 
   if (!trimmedMessage) {
     return res.status(400).json({ error: "Message must not be empty." });
   }
 
-  let knowledgeBase;
+  const modelUrl = process.env.LOCAL_MODEL_URL;
+  const modelApiKey = process.env.LOCAL_MODEL_API_KEY;
+  const modelName = process.env.LOCAL_MODEL_NAME || "gemma3:1b";
+
+  if (!modelUrl || !modelApiKey) {
+    console.error("LOCAL_MODEL_URL / LOCAL_MODEL_API_KEY not configured.");
+    return res.status(200).json({ reply: FALLBACK_ANSWER });
+  }
+
+  let systemPrompt;
   try {
-    knowledgeBase = buildKnowledgeBase();
+    systemPrompt = buildSystemPrompt();
   } catch (err) {
     console.error("Failed to build chat knowledge base:", err.message);
     return res.status(500).json({ error: "Could not load site content." });
   }
 
-  const documentFrequency = buildDocumentFrequency(knowledgeBase);
-  const match = findBestMatch(trimmedMessage, knowledgeBase, documentFrequency);
-  const reply = match ? match.answer : FALLBACK_ANSWER;
+  // history comes from the frontend as [{role, content}, ...] — already
+  // in OpenAI chat-completions shape, so it's forwarded as-is.
+  const priorTurns = Array.isArray(history)
+    ? history.filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
+    : [];
 
-  return res.json({ reply });
+  const messages = [
+    { role: "system", content: systemPrompt },
+    ...priorTurns,
+    { role: "user", content: trimmedMessage },
+  ];
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30_000);
+
+    const response = await fetch(`${modelUrl.replace(/\/$/, "")}/v1/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${modelApiKey}`,
+      },
+      body: JSON.stringify({
+        model: modelName,
+        messages,
+        temperature: 0.4,
+        max_tokens: 300,
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+
+    if (!response.ok) {
+      console.error("Local model request failed:", response.status, await response.text().catch(() => ""));
+      return res.status(200).json({ reply: UNAVAILABLE_ANSWER });
+    }
+
+    const data = await response.json();
+    const reply = data?.choices?.[0]?.message?.content?.trim();
+
+    if (!reply) {
+      return res.status(200).json({ reply: FALLBACK_ANSWER });
+    }
+
+    return res.json({ reply });
+  } catch (err) {
+    console.error("Error calling local model:", err.message);
+    return res.status(200).json({ reply: UNAVAILABLE_ANSWER });
+  }
 });
 
 export default router;
