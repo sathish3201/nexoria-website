@@ -173,9 +173,19 @@ router.post("/", async (req, res) => {
   // user/assistant/..."). Fold the system prompt into the current user
   // turn instead (every chat template, Gemma included, accepts this),
   // repeating it each turn so multi-turn context keeps working.
+  //
+  // The question goes FIRST, instructions/context AFTER: testing showed
+  // a small model (Gemma 3 1B) burying the actual question at the end
+  // of a long instructional block would emit an early stop token instead
+  // of answering — putting the question up front and re-asking it at the
+  // very end (small models weight recent tokens heavily) reliably fixed
+  // this from generating 0-1 tokens to producing a real answer.
   const messages = [
     ...priorTurns,
-    { role: "user", content: `${systemPrompt}\n\n---\n\nVisitor question: ${trimmedMessage}` },
+    {
+      role: "user",
+      content: `Visitor question: ${trimmedMessage}\n\n---\n\n${systemPrompt}\n\n---\n\nNow answer the visitor's question: "${trimmedMessage}"`,
+    },
   ];
 
   try {
