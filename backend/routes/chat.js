@@ -167,27 +167,30 @@ router.post("/", async (req, res) => {
     ? history.filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
     : [];
 
+  // Gemma's chat template has no "system" role and strictly enforces
+  // alternating user/assistant turns — a separate system-role message
+  // breaks its Jinja template ("Conversation roles must alternate
+  // user/assistant/..."). Fold the system prompt into the current user
+  // turn instead (every chat template, Gemma included, accepts this),
+  // repeating it each turn so multi-turn context keeps working.
   const messages = [
-    { role: "system", content: systemPrompt },
     ...priorTurns,
-    { role: "user", content: trimmedMessage },
+    { role: "user", content: `${systemPrompt}\n\n---\n\nVisitor question: ${trimmedMessage}` },
   ];
 
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 60_000);
 
-    // llama-server has no API key check of its own — the phone's ngrok
-    // tunnel is what's protected, via HTTP Basic Auth (see start.sh),
-    // not a Bearer token. Send Basic Auth with "apikey" as the username
-    // and the API key as the password to match that.
-    const basicAuth = Buffer.from(`apikey:${modelApiKey}`).toString("base64");
+    // llama-server now enforces its own --api-key (see start.sh), which
+    // checks "Authorization: Bearer <key>" — not the ngrok --basic-auth
+    // scheme this used to require.
 
     const response = await fetch(`${modelUrl.replace(/\/$/, "")}/v1/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Basic ${basicAuth}`,
+        Authorization: `Bearer ${modelApiKey}`,
       },
       body: JSON.stringify({
         model: modelName,
