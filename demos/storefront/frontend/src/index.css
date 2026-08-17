@@ -980,6 +980,27 @@ main {
   align-self: flex-start;
 }
 
+.chat-bubble-thinking {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: chat-spin 0.7s linear infinite;
+}
+
+@keyframes chat-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .chat-input-row {
   display: flex;
   gap: 8px;

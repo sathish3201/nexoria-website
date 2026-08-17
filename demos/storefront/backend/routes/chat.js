@@ -16,127 +16,145 @@ function formatPrice(paise) {
 
 const FAQ_ENTRIES = [
   {
-    keywords: ["shipping", "delivery", "deliver", "ship", "how long"],
+    question: "What about shipping / delivery?",
     answer:
       "This is a demo storefront, so no real shipping happens — in a production build, shipping timelines and carrier options would show here at checkout.",
   },
   {
-    keywords: ["return", "refund", "exchange", "money back"],
+    question: "What about returns / refunds?",
     answer:
       "This is a demo storefront, so no real orders or refunds are processed. A production version would have a standard returns policy here.",
   },
   {
-    keywords: ["payment", "pay", "checkout", "razorpay", "card", "upi"],
+    question: "How does payment / checkout work?",
     answer:
       "Checkout runs on Razorpay in test mode — no real payment is charged. Use a Razorpay test card or test UPI ID to complete a demo purchase.",
   },
   {
-    keywords: ["track", "order status", "where is my order"],
+    question: "How can I track my order?",
     answer:
       "Since this is a demo storefront, orders aren't fulfilled or shipped — but a completed test checkout will show up in the admin dashboard.",
   },
   {
-    keywords: ["stock", "inventory", "available", "out of stock"],
+    question: "How do I check stock / inventory?",
     answer:
       "Stock levels are shown on each product card. This demo includes a simple admin dashboard for managing inventory.",
   },
   {
-    keywords: ["contact", "support", "help", "admin"],
+    question: "How do I get support / contact you?",
     answer:
       "This is a portfolio/demo project by Nexoria Technologies — for real support inquiries, please use the Contact page on the main Nexoria site.",
   },
 ];
 
-function buildKnowledgeBase() {
+// Builds a compact, plain-text summary of the store's real product +
+// FAQ content to inject into the model's prompt — same pattern as
+// Nexoria's own chat route (backend/routes/chat.js in the parent site).
+function buildKnowledgeSummary() {
   const products = readJSON("products.json");
-  const entries = [];
 
-  for (const p of products) {
-    entries.push({
-      keywords: [p.name, p.description].join(" "),
-      answer: `${p.name} — ${formatPrice(p.priceInPaise)}. ${p.description} (${p.stock} in stock.)`,
-    });
-  }
+  const productsText = products
+    .map((p) => `- ${p.name}: ${formatPrice(p.priceInPaise)}. ${p.description} (${p.stock} in stock.)`)
+    .join("\n");
 
-  for (const faq of FAQ_ENTRIES) {
-    entries.push({ keywords: faq.keywords.join(" "), answer: faq.answer, priority: 2 });
-  }
+  const faqText = FAQ_ENTRIES.map((f) => `- Q: ${f.question}\n  A: ${f.answer}`).join("\n");
 
-  return entries.map((e) => ({ ...e, priority: e.priority || 1, tokens: tokenize(e.keywords) }));
+  return `PRODUCTS:\n${productsText}\n\nFREQUENTLY ASKED QUESTIONS:\n${faqText}`;
 }
 
-const STOPWORDS = new Set([
-  "the", "a", "an", "is", "are", "do", "does", "you", "your", "i", "we", "what",
-  "how", "can", "will", "to", "of", "for", "in", "on", "and", "or", "with",
-]);
+function buildSystemPrompt() {
+  return `You are the chat assistant on the Trailhead Goods demo storefront (a portfolio project by Nexoria Technologies). Answer visitor questions using ONLY the information below. Be concise (2-4 sentences unless more detail is clearly needed). If a question isn't covered by this information, say you don't have that specific detail. Never invent products, prices, or policies that aren't listed here.
 
-function tokenize(text) {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .split(/\s+/)
-    .filter((t) => t.length > 1 && !STOPWORDS.has(t));
+${buildKnowledgeSummary()}`;
 }
 
-function buildDocumentFrequency(knowledgeBase) {
-  const freq = new Map();
-  for (const entry of knowledgeBase) {
-    for (const token of new Set(entry.tokens)) {
-      freq.set(token, (freq.get(token) || 0) + 1);
-    }
-  }
-  return freq;
-}
+const UNCONFIGURED_ANSWER =
+  "The AI chat isn't configured on this deployment yet. Try asking about a product, shipping, payment, or returns.";
 
-function findBestMatch(message, knowledgeBase, documentFrequency) {
-  const messageTokens = tokenize(message);
-  if (messageTokens.length === 0) return null;
-
-  let best = null;
-  let bestScore = 0;
-
-  for (const entry of knowledgeBase) {
-    const matched = messageTokens.filter((t) => entry.tokens.includes(t));
-    if (matched.length === 0) continue;
-
-    const score =
-      matched.reduce((sum, t) => sum + 1 / (documentFrequency.get(t) || 1), 0) * entry.priority;
-
-    if (score > bestScore) {
-      bestScore = score;
-      best = entry;
-    }
-  }
-
-  return best;
-}
-
-const FALLBACK_ANSWER =
-  "I don't have a specific answer for that. Try asking about a product, shipping, payment, or returns — this is a demo storefront built by Nexoria Technologies.";
+const UNAVAILABLE_ANSWER =
+  "I couldn't reach the AI assistant right now — it may be offline at the moment. Please try again shortly.";
 
 const router = Router();
 
-router.post("/", (req, res) => {
-  const { message } = req.body;
+router.post("/", async (req, res) => {
+  const { message, history } = req.body;
   const trimmedMessage = typeof message === "string" ? message.trim() : "";
 
   if (!trimmedMessage) {
     return res.status(400).json({ error: "Message must not be empty." });
   }
 
-  let knowledgeBase;
+  const modelUrl = process.env.LOCAL_MODEL_URL;
+  const modelApiKey = process.env.LOCAL_MODEL_API_KEY;
+  const modelName = process.env.LOCAL_MODEL_NAME || "gemma3:1b";
+
+  if (!modelUrl || !modelApiKey) {
+    console.error("LOCAL_MODEL_URL / LOCAL_MODEL_API_KEY not configured.");
+    return res.status(200).json({ reply: UNCONFIGURED_ANSWER });
+  }
+
+  let systemPrompt;
   try {
-    knowledgeBase = buildKnowledgeBase();
+    systemPrompt = buildSystemPrompt();
   } catch (err) {
     console.error("Failed to build chat knowledge base:", err.message);
     return res.status(500).json({ error: "Could not load store content." });
   }
 
-  const documentFrequency = buildDocumentFrequency(knowledgeBase);
-  const match = findBestMatch(trimmedMessage, knowledgeBase, documentFrequency);
-  const reply = match ? match.answer : FALLBACK_ANSWER;
+  const priorTurns = Array.isArray(history)
+    ? history.filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
+    : [];
 
-  return res.json({ reply });
+  // Gemma's chat template has no "system" role and strictly enforces
+  // alternating user/assistant turns — a separate system-role message
+  // breaks its Jinja template ("Conversation roles must alternate
+  // user/assistant/..."). Fold the system prompt into the current user
+  // turn instead. The question goes FIRST, instructions/context AFTER,
+  // then the question is restated at the very end — burying the actual
+  // question at the end of a long instructional block made Gemma 3 1B
+  // emit an early stop token (0-1 output tokens) instead of answering;
+  // this ordering reliably produces a real answer instead.
+  const messages = [
+    ...priorTurns,
+    {
+      role: "user",
+      content: `Visitor question: ${trimmedMessage}\n\n---\n\n${systemPrompt}\n\n---\n\nNow answer the visitor's question: "${trimmedMessage}"`,
+    },
+  ];
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 60_000);
+
+    const response = await fetch(`${modelUrl.replace(/\/$/, "")}/v1/chat/completions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${modelApiKey}`,
+      },
+      body: JSON.stringify({
+        model: modelName,
+        messages,
+        temperature: 0.4,
+        max_tokens: 150,
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+
+    if (!response.ok) {
+      console.error("Local model request failed (storefront chat):", response.status, await response.text().catch(() => ""));
+      return res.status(200).json({ reply: UNAVAILABLE_ANSWER });
+    }
+
+    const data = await response.json();
+    const reply = data?.choices?.[0]?.message?.content?.trim();
+
+    return res.json({ reply: reply || UNAVAILABLE_ANSWER });
+  } catch (err) {
+    console.error("Error calling local model (storefront chat):", err.message);
+    return res.status(200).json({ reply: UNAVAILABLE_ANSWER });
+  }
 });
 
 export default router;

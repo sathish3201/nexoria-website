@@ -18,13 +18,21 @@ export default function ChatWidget() {
     const text = input.trim();
     if (!text || sending) return;
 
+    // GREETING is a canned UI bubble, not a real conversation turn — the
+    // model's chat template (Gemma) requires the turn sequence to start
+    // with "user" and strictly alternate user/assistant from there.
+    // Sending GREETING as history makes every first message start with
+    // "assistant", which the template hard-rejects with a 400.
+    const history = messages
+      .filter((m) => m !== GREETING)
+      .map(({ role, content }) => ({ role, content }));
     setMessages((prev) => [...prev, { role: "user", content: text }]);
     setInput("");
     setError(null);
     setSending(true);
 
     try {
-      const reply = await api.sendChatMessage(text);
+      const reply = await api.sendChatMessage(text, history);
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
     } catch (err) {
       setError(err.message);
@@ -50,7 +58,12 @@ export default function ChatWidget() {
                 {m.content}
               </div>
             ))}
-            {sending && <div className="chat-bubble chat-bubble-assistant">Thinking…</div>}
+            {sending && (
+              <div className="chat-bubble chat-bubble-assistant chat-bubble-thinking">
+                <span className="chat-spinner" aria-hidden="true" />
+                <span>Thinking</span>
+              </div>
+            )}
             {error && <div className="chat-bubble chat-bubble-error">{error}</div>}
           </div>
 
