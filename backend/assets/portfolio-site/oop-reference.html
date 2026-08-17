@@ -1,0 +1,2245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Object Design Field Guide</title>
+<meta name="description" content="OOP pillars with a beginner before/after walkthrough, SOLID principles, and six design patterns — each shown before and after, with UML diagrams and code in Python, Java, C#, and React." />
+<style>
+@font-face {
+  font-family: 'Source Serif';
+  src: local('Source Serif 4'), local('Source Serif Pro');
+  font-weight: 400 700;
+}
+
+:root {
+  --ink: #1b1e24;
+  --ink-soft: #4a4f5a;
+  --paper: #faf9f6;
+  --paper-raised: #ffffff;
+  --accent: #3d5a80;
+  --accent-strong: #2c4360;
+  --accent-soft: #e8edf3;
+  --rule: #d8d5cc;
+  --rule-soft: #e8e6df;
+  --code-bg: #f2f0ea;
+  --code-ink: #2a2d33;
+  --good: #3a6b52;
+  --warn: #8a5a2b;
+
+  --serif: 'Source Serif', Georgia, 'Times New Roman', serif;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --measure: 68ch;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ink: #e8e6e1;
+    --ink-soft: #a8a9ae;
+    --paper: #16181c;
+    --paper-raised: #1e2126;
+    --accent: #7ea3c9;
+    --accent-strong: #9cbdda;
+    --accent-soft: #232c37;
+    --rule: #33363d;
+    --rule-soft: #292c32;
+    --code-bg: #1c1e23;
+    --code-ink: #d9d7d0;
+    --good: #6fae8e;
+    --warn: #c99a5e;
+  }
+}
+
+:root[data-theme="dark"] {
+  --ink: #e8e6e1;
+  --ink-soft: #a8a9ae;
+  --paper: #16181c;
+  --paper-raised: #1e2126;
+  --accent: #7ea3c9;
+  --accent-strong: #9cbdda;
+  --accent-soft: #232c37;
+  --rule: #33363d;
+  --rule-soft: #292c32;
+  --code-bg: #1c1e23;
+  --code-ink: #d9d7d0;
+  --good: #6fae8e;
+  --warn: #c99a5e;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* ---------- Layout shell ---------- */
+
+.shell {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; }
+  .toc { display: none; }
+}
+
+.toc {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 2.5rem 1.25rem 2rem 1.5rem;
+  border-right: 1px solid var(--rule);
+  font-size: 0.84rem;
+}
+
+.toc-brand {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem;
+  letter-spacing: -0.01em;
+}
+
+.toc-group { margin-bottom: 1.35rem; }
+
+.toc-label {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 0.5rem;
+}
+
+.toc a {
+  display: block;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 0.28rem 0;
+  border-left: 2px solid transparent;
+  padding-left: 0.6rem;
+  margin-left: -0.6rem;
+}
+
+.toc a:hover, .toc a:focus-visible {
+  color: var(--ink);
+  border-left-color: var(--accent);
+}
+
+main {
+  padding: 2.5rem clamp(1.25rem, 4vw, 4rem) 6rem;
+  min-width: 0;
+}
+
+.masthead {
+  max-width: var(--measure);
+  margin-bottom: 3.5rem;
+}
+
+.kicker {
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+h1.title {
+  font-family: var(--serif);
+  font-size: clamp(2.1rem, 4vw, 2.75rem);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin: 0.6rem 0 0.9rem;
+  text-wrap: balance;
+}
+
+.dek {
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+  max-width: 58ch;
+}
+
+section.block {
+  max-width: var(--measure);
+  margin: 0 0 3.25rem;
+  scroll-margin-top: 1.5rem;
+}
+
+section.block.wide { max-width: none; }
+
+h2.h {
+  font-family: var(--serif);
+  font-size: 1.55rem;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.4rem;
+  padding-top: 2.75rem;
+  border-top: 1px solid var(--rule);
+}
+
+h2.h .num {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.35rem;
+  letter-spacing: 0.02em;
+}
+
+h3.h3 {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  margin: 1.6rem 0 0.5rem;
+  letter-spacing: -0.005em;
+}
+
+p { margin: 0.75rem 0; }
+
+.lede {
+  font-size: 1.02rem;
+  color: var(--ink-soft);
+}
+
+strong { color: var(--ink); font-weight: 600; }
+
+.why-when {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.1rem 0 1.4rem;
+}
+
+@media (max-width: 640px) { .why-when { grid-template-columns: 1fr; } }
+
+.callout {
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  border-radius: 3px;
+  padding: 0.9rem 1.05rem;
+}
+
+.callout .lbl {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.callout p { margin: 0; font-size: 0.92rem; color: var(--ink-soft); }
+
+/* ---------- SOLID pentagon nav ---------- */
+
+.solid-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.6rem;
+  margin: 1.5rem 0 2.5rem;
+}
+
+@media (max-width: 760px) { .solid-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.solid-card {
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 0.85rem 0.8rem;
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.solid-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+
+.solid-card .letter {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  color: var(--accent);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.solid-card .name {
+  font-size: 0.76rem;
+  color: var(--ink-soft);
+  margin-top: 0.3rem;
+  line-height: 1.3;
+}
+
+/* ---------- Code tabs ---------- */
+
+.codeblock {
+  margin: 1.1rem 0 1.6rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--paper-raised);
+}
+
+.tabbar {
+  display: flex;
+  gap: 0;
+  background: var(--rule-soft);
+  border-bottom: 1px solid var(--rule);
+  overflow-x: auto;
+}
+
+.tabbtn {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  padding: 0.55rem 1.1rem;
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--rule);
+  color: var(--ink-soft);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tabbtn:hover { color: var(--ink); }
+
+.tabbtn.active {
+  background: var(--code-bg);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.tabbtn:focus-visible, a:focus-visible, .toc a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.tabpanel { display: none; }
+.tabpanel.active { display: block; }
+
+pre {
+  margin: 0;
+  padding: 1.1rem 1.25rem;
+  background: var(--code-bg);
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  line-height: 1.62;
+  color: var(--code-ink);
+}
+
+code { font-family: var(--mono); }
+
+p code, li code {
+  background: var(--code-bg);
+  padding: 0.1em 0.4em;
+  border-radius: 3px;
+  font-size: 0.87em;
+  color: var(--accent-strong);
+}
+
+.cm { color: var(--ink-soft); font-style: italic; }
+.kw { color: var(--accent-strong); font-weight: 600; }
+.tp { color: var(--good); }
+.str { color: var(--warn); }
+
+/* ---------- Diagram frame ---------- */
+
+.diagram-frame {
+  margin: 1.3rem 0 1.8rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: var(--paper-raised);
+  padding: 1.4rem;
+  overflow-x: auto;
+}
+
+.diagram-frame svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+
+.diagram-cap {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  text-align: center;
+  margin-top: 0.6rem;
+  font-family: var(--mono);
+}
+
+/* ---------- Pattern card meta row ---------- */
+
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.9rem 0 1.3rem;
+}
+
+.pill {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  padding: 0.28rem 0.65rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  border: 1px solid transparent;
+}
+
+/* ---------- Before / After ---------- */
+
+.ba-wrap {
+  margin: 1.2rem 0 1.6rem;
+}
+
+.ba-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+@media (max-width: 700px) { .ba-grid { grid-template-columns: 1fr; } }
+
+.ba-col { background: var(--paper-raised); display: flex; flex-direction: column; }
+
+.ba-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 700;
+}
+
+.ba-col.before .ba-head { color: var(--warn); background: color-mix(in srgb, var(--warn) 10%, transparent); }
+.ba-col.after .ba-head { color: var(--good); background: color-mix(in srgb, var(--good) 10%, transparent); }
+
+.ba-head .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: currentColor; flex-shrink: 0;
+}
+
+.ba-col pre {
+  flex: 1;
+  font-size: 0.78rem;
+  border: none;
+}
+
+.ba-col .ba-note {
+  padding: 0.7rem 1rem;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  border-top: 1px solid var(--rule);
+}
+
+.ba-arrow-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.9rem 0 0;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  color: var(--ink-soft);
+}
+
+.ba-arrow-row svg { flex-shrink: 0; color: var(--accent); }
+
+/* ---------- Table ---------- */
+
+.tablewrap { overflow-x: auto; margin: 1.2rem 0 1.6rem; }
+
+table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+
+th, td {
+  text-align: left;
+  padding: 0.55rem 0.9rem;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+
+th {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+tr:last-child td { border-bottom: none; }
+
+/* ---------- Footer ---------- */
+
+footer {
+  max-width: var(--measure);
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+::selection { background: var(--accent-soft); color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <nav class="toc" aria-label="Table of contents">
+    <div class="toc-brand">Object Design<br>Field Guide</div>
+
+    <div class="toc-group">
+      <div class="toc-label">Foundations</div>
+      <a href="#oop">OOP Pillars</a>
+      <a href="#oop-demo">OOP in Practice</a>
+      <a href="#solid">SOLID Principles</a>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-label">Structural</div>
+      <a href="#adapter">Adapter</a>
+      <a href="#decorator">Decorator</a>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-label">Behavioral</div>
+      <a href="#strategy">Strategy</a>
+      <a href="#state">State</a>
+      <a href="#observer">Observer</a>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-label">Creational</div>
+      <a href="#factory">Factory</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="masthead">
+      <div class="kicker">Python · Java · C# · React</div>
+      <h1 class="title">Object Design Field Guide</h1>
+      <p class="dek">OOP fundamentals with a beginner walkthrough, the five SOLID principles, and six patterns you'll actually meet in interviews and in production &mdash; each shown before and after, with a UML diagram and working code in four languages.</p>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- OOP PILLARS -->
+    <!-- ============================================================ -->
+    <section class="block wide" id="oop">
+      <h2 class="h"><span class="num">01 / Foundations</span>The Four Pillars of OOP</h2>
+      <p class="lede" style="max-width: var(--measure)">Every pattern below is built from four ideas. React has no classes in practice, but each pillar still maps onto components, hooks, and props &mdash; noted alongside.</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>Pillar</th><th>Means</th><th>Python / Java / C#</th><th>React equivalent</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Encapsulation</strong></td>
+              <td>Bundle state with the behavior that guards it; hide internals.</td>
+              <td>Private fields (<code>__x</code>, <code>private</code>) behind public methods.</td>
+              <td>Component state via <code>useState</code> stays inside the component; only props/callbacks cross the boundary.</td>
+            </tr>
+            <tr>
+              <td><strong>Abstraction</strong></td>
+              <td>Expose <em>what</em>, hide <em>how</em>.</td>
+              <td>Abstract base classes / interfaces (<code>ABC</code>, <code>interface</code>).</td>
+              <td>A custom hook (<code>useAuth()</code>) hides fetch/storage details behind a simple call.</td>
+            </tr>
+            <tr>
+              <td><strong>Inheritance</strong></td>
+              <td>Derive a specialized type from a general one, reusing its shape.</td>
+              <td><code>class Dog(Animal)</code>, <code>extends</code>.</td>
+              <td>Rare and discouraged &mdash; composition via wrapping components does this job instead.</td>
+            </tr>
+            <tr>
+              <td><strong>Polymorphism</strong></td>
+              <td>One interface, many concrete behaviors, selected at runtime.</td>
+              <td>Method overriding, interface implementations.</td>
+              <td>Rendering different components/branches based on a <code>type</code> prop or discriminated union.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <span class="lbl">Interview framing</span>
+        <p>When asked "explain OOP," lead with encapsulation and polymorphism &mdash; they're what SOLID and every pattern below actually lean on. Inheritance is the pillar most patterns here deliberately avoid in favor of composition.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- OOP IN PRACTICE (beginner demo) -->
+    <!-- ============================================================ -->
+    <section class="block wide" id="oop-demo">
+      <h2 class="h"><span class="num">02 / Foundations</span>OOP in Practice &mdash; a Beginner Walkthrough</h2>
+      <p class="lede" style="max-width: var(--measure)">If you've never written a class before, start here. Below is the same small program &mdash; tracking a library book &mdash; written twice: first as loose variables and functions (how most people start), then as a class. Run both in your head; the outputs match, but only one of them scales.</p>
+
+      <h3 class="h3">Step 1 &mdash; the problem, without OOP</h3>
+      <p>Plain variables and functions floating separately. Nothing stops you from passing the wrong dictionary to the wrong function, and every function needs to re-check what state the book is in.</p>
+
+      <div class="ba-wrap">
+        <div class="ba-grid">
+          <div class="ba-col before">
+            <div class="ba-head"><span class="dot"></span>Before &mdash; no OOP</div>
+            <pre><span class="cm"># Book data and behavior are disconnected.</span>
+<span class="cm"># Any function can mutate any dict, in any shape.</span>
+book = {<span class="str">"title"</span>: <span class="str">"Dune"</span>, <span class="str">"is_checked_out"</span>: <span class="kw">False</span>}
+
+<span class="kw">def</span> check_out(b):
+    <span class="kw">if</span> b[<span class="str">"is_checked_out"</span>]:
+        <span class="kw">raise</span> ValueError(<span class="str">"Already out"</span>)
+    b[<span class="str">"is_checked_out"</span>] = <span class="kw">True</span>
+
+<span class="kw">def</span> return_book(b):
+    b[<span class="str">"is_checked_out"</span>] = <span class="kw">False</span>
+
+<span class="cm"># Nothing enforces this contract — any code anywhere</span>
+<span class="cm"># could write book["is_checked_out"] = "yes" and break it.</span>
+check_out(book)
+print(book[<span class="str">"is_checked_out"</span>])  <span class="cm"># True</span></pre>
+            <div class="ba-note">Works for one book. Add a second book type (DVD, magazine) and every function needs new branches to handle each shape.</div>
+          </div>
+          <div class="ba-col after">
+            <div class="ba-head"><span class="dot"></span>After &mdash; with OOP</div>
+            <pre><span class="cm"># State (title, is_checked_out) and the behavior that</span>
+<span class="cm"># guards it now live in one place: the class.</span>
+<span class="kw">class</span> Book:
+    <span class="kw">def</span> __init__(self, title):
+        self.title = title
+        self._is_checked_out = <span class="kw">False</span>   <span class="cm"># encapsulated</span>
+
+    <span class="kw">def</span> check_out(self):
+        <span class="kw">if</span> self._is_checked_out:
+            <span class="kw">raise</span> ValueError(<span class="str">"Already out"</span>)
+        self._is_checked_out = <span class="kw">True</span>
+
+    <span class="kw">def</span> return_book(self):
+        self._is_checked_out = <span class="kw">False</span>
+
+    <span class="kw">def</span> is_available(self):
+        <span class="kw">return not</span> self._is_checked_out
+
+dune = Book(<span class="str">"Dune"</span>)
+dune.check_out()
+print(dune.is_available())  <span class="cm"># False</span></pre>
+            <div class="ba-note">The rule "can't check out an already-checked-out book" lives inside <code>Book</code> itself &mdash; impossible to bypass by accident.</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="h3">Step 2 &mdash; polymorphism removes the branching</h3>
+      <p>Now add a second kind of item: a DVD, which has a different loan period. Without OOP you'd add an <code>if item_type == "dvd"</code> check everywhere. With OOP, each class knows its own rule &mdash; the calling code doesn't change at all.</p>
+
+      <div class="codeblock" data-block="oop-demo-poly">
+        <div class="tabbar">
+          <button class="tabbtn active" data-lang="python">Python</button>
+          <button class="tabbtn" data-lang="java">Java</button>
+          <button class="tabbtn" data-lang="csharp">C#</button>
+          <button class="tabbtn" data-lang="react">React</button>
+        </div>
+        <div class="tabpanel active" data-lang="python"><pre><span class="kw">class</span> LibraryItem:
+    <span class="kw">def</span> __init__(self, title):
+        self.title = title
+
+    <span class="kw">def</span> loan_period_days(self):
+        <span class="kw">raise</span> NotImplementedError
+
+<span class="kw">class</span> Book(LibraryItem):
+    <span class="kw">def</span> loan_period_days(self):
+        <span class="kw">return</span> 21
+
+<span class="kw">class</span> Dvd(LibraryItem):
+    <span class="kw">def</span> loan_period_days(self):
+        <span class="kw">return</span> 7
+
+<span class="cm"># This function never checks "what type is it?" — it just asks.</span>
+<span class="kw">def</span> due_date_message(item):
+    <span class="kw">return</span> <span class="str">f"{item.title} is due in {item.loan_period_days()} days"</span>
+
+<span class="kw">for</span> item <span class="kw">in</span> [Book(<span class="str">"Dune"</span>), Dvd(<span class="str">"Arrival"</span>)]:
+    print(due_date_message(item))
+<span class="cm"># Dune is due in 21 days</span>
+<span class="cm"># Arrival is due in 7 days</span></pre></div>
+        <div class="tabpanel" data-lang="java"><pre><span class="kw">public abstract class</span> LibraryItem {
+    <span class="kw">protected final</span> String title;
+    <span class="kw">protected</span> LibraryItem(String title) { <span class="kw">this</span>.title = title; }
+    <span class="kw">public abstract int</span> loanPeriodDays();
+}
+
+<span class="kw">public class</span> Book <span class="kw">extends</span> LibraryItem {
+    <span class="kw">public</span> Book(String title) { <span class="kw">super</span>(title); }
+    <span class="kw">public int</span> loanPeriodDays() { <span class="kw">return</span> 21; }
+}
+
+<span class="kw">public class</span> Dvd <span class="kw">extends</span> LibraryItem {
+    <span class="kw">public</span> Dvd(String title) { <span class="kw">super</span>(title); }
+    <span class="kw">public int</span> loanPeriodDays() { <span class="kw">return</span> 7; }
+}
+
+<span class="cm">// Never checks "what type is it?" — it just asks.</span>
+<span class="kw">static</span> String dueDateMessage(LibraryItem item) {
+    <span class="kw">return</span> item.title + <span class="str">" is due in "</span> + item.loanPeriodDays() + <span class="str">" days"</span>;
+}</pre></div>
+        <div class="tabpanel" data-lang="csharp"><pre><span class="kw">public abstract class</span> LibraryItem
+{
+    <span class="kw">public string</span> Title { get; }
+    <span class="kw">protected</span> LibraryItem(<span class="kw">string</span> title) =&gt; Title = title;
+    <span class="kw">public abstract int</span> LoanPeriodDays();
+}
+
+<span class="kw">public class</span> Book : LibraryItem
+{
+    <span class="kw">public</span> Book(<span class="kw">string</span> title) : <span class="kw">base</span>(title) { }
+    <span class="kw">public override int</span> LoanPeriodDays() =&gt; 21;
+}
+
+<span class="kw">public class</span> Dvd : LibraryItem
+{
+    <span class="kw">public</span> Dvd(<span class="kw">string</span> title) : <span class="kw">base</span>(title) { }
+    <span class="kw">public override int</span> LoanPeriodDays() =&gt; 7;
+}
+
+<span class="cm">// Never checks "what type is it?" — it just asks.</span>
+<span class="kw">string</span> DueDateMessage(LibraryItem item) =&gt;
+    $<span class="str">"{item.Title} is due in {item.LoanPeriodDays()} days"</span>;</pre></div>
+        <div class="tabpanel" data-lang="react"><pre><span class="cm">// React has no classes here — polymorphism becomes each</span>
+<span class="cm">// item "knowing" its own loan period via a lookup or method</span>
+<span class="cm">// on a plain object, and the component never branches on type.</span>
+
+<span class="kw">const</span> book = { title: <span class="str">"Dune"</span>, loanPeriodDays: () =&gt; 21 };
+<span class="kw">const</span> dvd  = { title: <span class="str">"Arrival"</span>, loanPeriodDays: () =&gt; 7 };
+
+<span class="cm">// Never checks "what type is it?" — it just calls the method.</span>
+<span class="kw">function</span> DueDateBadge({ item }) {
+  <span class="kw">return</span> &lt;span&gt;{item.title} is due in {item.loanPeriodDays()} days&lt;/span&gt;;
+}
+
+[book, dvd].map(item =&gt; &lt;DueDateBadge key={item.title} item={item} /&gt;);</pre></div>
+      </div>
+
+      <div class="callout">
+        <span class="lbl">What actually changed</span>
+        <p>No new syntax trick &mdash; the loan period rule simply moved from "a check the caller has to remember" into "a fact the object can answer about itself." That single move is the seed every SOLID principle and every pattern below grows out of.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SOLID -->
+    <!-- ============================================================ -->
+    <section class="block wide" id="solid">
+      <h2 class="h"><span class="num">03 / Foundations</span>SOLID Principles</h2>
+      <p class="lede" style="max-width: var(--measure)">Five rules for keeping a class hierarchy changeable. Each one below follows the same shape: the rule, why it exists, then a violation fixed across all four stacks.</p>
+
+      <div class="solid-grid">
+        <a class="solid-card" href="#srp"><div class="letter">S</div><div class="name">Single Responsibility</div></a>
+        <a class="solid-card" href="#ocp"><div class="letter">O</div><div class="name">Open/Closed</div></a>
+        <a class="solid-card" href="#lsp"><div class="letter">L</div><div class="name">Liskov Substitution</div></a>
+        <a class="solid-card" href="#isp"><div class="letter">I</div><div class="name">Interface Segregation</div></a>
+        <a class="solid-card" href="#dip"><div class="letter">D</div><div class="name">Dependency Inversion</div></a>
+      </div>
+
+      <!-- SRP -->
+      <h3 class="h3" id="srp">S &mdash; Single Responsibility Principle</h3>
+      <p>A class should have exactly one reason to change. <code>Report</code> that formats, saves, <em>and</em> prints has three reasons &mdash; split each concern into its own class.</p>
+
+      <div class="ba-arrow-row">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11m0 0-4-4m4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span><strong style="color:var(--warn)">Before:</strong> one <code>Report</code> class formats text, writes files, and prints &mdash; edit any of the three and you risk breaking the others. <strong style="color:var(--good)">After:</strong> <code>Report</code>, <code>ReportPrinter</code>, <code>ReportFileSaver</code> each change for exactly one reason. See the code below.</span>
+      </div>
+
+      <div class="diagram-frame">
+        <svg viewBox="0 0 620 200" role="img" aria-labelledby="srp-svg-title">
+          <title id="srp-svg-title">UML: Report split into Report, ReportPrinter, ReportSaver</title>
+          <defs>
+            <marker id="arrow-open" markerWidth="12" markerHeight="10" refX="10" refY="5" orient="auto">
+              <path d="M0,0 L10,5 L0,10" fill="none" stroke="var(--ink-soft)" stroke-width="1.4"/>
+            </marker>
+          </defs>
+          <g font-family="var(--mono)" font-size="12" fill="var(--ink)">
+            <rect x="250" y="16" width="120" height="56" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.4"/>
+            <text x="310" y="34" text-anchor="middle" font-weight="700">Report</text>
+            <line x1="250" y1="42" x2="370" y2="42" stroke="var(--rule)"/>
+            <text x="260" y="58" font-size="10.5" fill="var(--ink-soft)">+generateText()</text>
+
+            <rect x="40" y="130" width="150" height="56" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="115" y="148" text-anchor="middle" font-weight="700">ReportPrinter</text>
+            <line x1="40" y1="156" x2="190" y2="156" stroke="var(--rule)"/>
+            <text x="50" y="172" font-size="10.5" fill="var(--ink-soft)">+print(text)</text>
+
+            <rect x="430" y="130" width="150" height="56" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="505" y="148" text-anchor="middle" font-weight="700">ReportSaver</text>
+            <line x1="430" y1="156" x2="580" y2="156" stroke="var(--rule)"/>
+            <text x="440" y="172" font-size="10.5" fill="var(--ink-soft)">+save(report, file)</text>
+
+            <line x1="270" y1="72" x2="140" y2="130" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-open)"/>
+            <text x="165" y="105" font-size="10" fill="var(--ink-soft)">uses</text>
+            <line x1="350" y1="72" x2="480" y2="130" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-open)"/>
+            <text x="440" y="105" font-size="10" fill="var(--ink-soft)">uses</text>
+          </g>
+        </svg>
+        <div class="diagram-cap">Report holds data only; printing and saving live in their own single-purpose classes.</div>
+      </div>
+
+      <div class="codeblock" data-block="srp">
+        <div class="tabbar">
+          <button class="tabbtn active" data-lang="python">Python</button>
+          <button class="tabbtn" data-lang="java">Java</button>
+          <button class="tabbtn" data-lang="csharp">C#</button>
+          <button class="tabbtn" data-lang="react">React</button>
+        </div>
+        <div class="tabpanel active" data-lang="python"><pre><span class="kw">class</span> Report:
+    <span class="cm"># Holds data + formatting only. Nothing else.</span>
+    <span class="kw">def</span> __init__(self, title, content):
+        self.title, self.content = title, content
+
+    <span class="kw">def</span> generate_text(self):
+        <span class="kw">return</span> <span class="str">f"{self.title.upper()}\n\n{self.content}"</span>
+
+<span class="kw">class</span> ReportPrinter:
+    <span class="kw">def</span> print(self, text):
+        print(text)
+
+<span class="kw">class</span> ReportFileSaver:
+    <span class="kw">def</span> save(self, text, filename):
+        <span class="kw">with</span> open(filename, <span class="str">"w"</span>) <span class="kw">as</span> f:
+            f.write(text)</pre></div>
+        <div class="tabpanel" data-lang="java"><pre><span class="kw">public class</span> Report {
+    <span class="kw">private final</span> String title, content;
+    <span class="cm">// Holds data + formatting only. Nothing else.</span>
+    <span class="kw">public</span> String generateText() {
+        <span class="kw">return</span> title.toUpperCase() + <span class="str">"\n\n"</span> + content;
+    }
+}
+
+<span class="kw">public class</span> ReportPrinter {
+    <span class="kw">public void</span> print(String text) { System.out.println(text); }
+}
+
+<span class="kw">public class</span> ReportFileSaver <span class="kw">implements</span> ReportSaver {
+    <span class="kw">public void</span> save(String text, String filename) <span class="kw">throws</span> IOException {
+        <span class="kw">try</span> (FileWriter w = <span class="kw">new</span> FileWriter(filename)) { w.write(text); }
+    }
+}</pre></div>
+        <div class="tabpanel" data-lang="csharp"><pre><span class="kw">public class</span> Report
+{
+    <span class="cm">// Holds data + formatting only. Nothing else.</span>
+    <span class="kw">public string</span> Title { get; }
+    <span class="kw">public string</span> Content { get; }
+
+    <span class="kw">public string</span> GenerateText() =>
+        $<span class="str">"{Title.ToUpper()}\n\n{Content}"</span>;
+}
+
+<span class="kw">public class</span> ReportPrinter
+{
+    <span class="kw">public void</span> Print(<span class="kw">string</span> text) =&gt; Console.WriteLine(text);
+}
+
+<span class="kw">public class</span> ReportFileSaver : IReportSaver
+{
+    <span class="kw">public void</span> Save(<span class="kw">string</span> text, <span class="kw">string</span> filename) =&gt;
+        File.WriteAllText(filename, text);
+}</pre></div>
+        <div class="tabpanel" data-lang="react"><pre><span class="cm">// Data + formatting lives in a pure function / hook,</span>
+<span class="cm">// not tangled into the component that renders it.</span>
+<span class="kw">function</span> formatReport(title, content) {
+  <span class="kw">return</span> <span class="str">`${title.toUpperCase()}\n\n${content}`</span>;
+}
+
+<span class="cm">// Rendering is its own concern.</span>
+<span class="kw">function</span> ReportView({ title, content }) {
+  <span class="kw">return</span> &lt;pre&gt;{formatReport(title, content)}&lt;/pre&gt;;
+}
+
+<span class="cm">// Persistence is its own concern (a hook, not the component).</span>
+<span class="kw">function</span> useSaveReport() {
+  <span class="kw">return function</span> save(text, filename) {
+    <span class="kw">return</span> fetch(<span class="str">`/api/reports/${filename}`</span>, { method: <span class="str">"PUT"</span>, body: text });
+  };
+}</pre></div>
+      </div>
+
+      <!-- OCP -->
+      <h3 class="h3" id="ocp">O &mdash; Open/Closed Principle</h3>
+      <p>Open for extension, closed for modification. Add a new report format by adding a new class, not by editing an existing one with another <code>if format == "json"</code> branch.</p>
+
+      <div class="ba-arrow-row">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11m0 0-4-4m4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span><strong style="color:var(--warn)">Before:</strong> one saver class with a growing <code>if format == "text" / "json" / "xml"</code> ladder &mdash; every new format edits code that already works and already shipped. <strong style="color:var(--good)">After:</strong> a <code>ReportSaver</code> contract; each format is its own class, added without touching the others.</span>
+      </div>
+
+      <div class="diagram-frame">
+        <svg viewBox="0 0 560 220" role="img" aria-labelledby="ocp-svg-title">
+          <title id="ocp-svg-title">UML: ReportSaver interface with TextFileSaver and JsonFileSaver implementations</title>
+          <defs>
+            <marker id="arrow-hollow" markerWidth="14" markerHeight="12" refX="12" refY="6" orient="auto">
+              <path d="M0,0 L12,6 L0,12 Z" fill="var(--paper-raised)" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            </marker>
+          </defs>
+          <g font-family="var(--mono)" font-size="12" fill="var(--ink)">
+            <rect x="205" y="14" width="150" height="56" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 2"/>
+            <text x="280" y="32" text-anchor="middle" font-style="italic" font-weight="700">&laquo;interface&raquo;</text>
+            <text x="280" y="48" text-anchor="middle" font-weight="700">ReportSaver</text>
+            <line x1="205" y1="54" x2="355" y2="54" stroke="var(--rule)"/>
+            <text x="215" y="66" font-size="10">+save(report, file)</text>
+
+            <rect x="60" y="150" width="160" height="50" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="140" y="180" text-anchor="middle" font-weight="700">TextFileSaver</text>
+
+            <rect x="340" y="150" width="160" height="50" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="420" y="180" text-anchor="middle" font-weight="700">JsonFileSaver</text>
+
+            <line x1="200" y1="150" x2="270" y2="70" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+            <line x1="360" y1="150" x2="300" y2="70" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+
+            <rect x="200" y="150" width="160" height="50" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="3 3" opacity="0.55" transform="translate(280,0)"/>
+            <text x="480" y="180" text-anchor="middle" font-size="10.5" fill="var(--accent)" opacity="0.85" transform="translate(0,0)"></text>
+          </g>
+          <g font-family="var(--mono)" font-size="10.5" fill="var(--accent)">
+            <text x="480" y="150" text-anchor="middle">new subclass &rarr;</text>
+            <text x="480" y="163" text-anchor="middle">extend, never edit</text>
+          </g>
+        </svg>
+        <div class="diagram-cap">Both savers implement one contract; a third format is a new box, not a diff to these two.</div>
+      </div>
+
+      <div class="codeblock" data-block="ocp">
+        <div class="tabbar">
+          <button class="tabbtn active" data-lang="python">Python</button>
+          <button class="tabbtn" data-lang="java">Java</button>
+          <button class="tabbtn" data-lang="csharp">C#</button>
+          <button class="tabbtn" data-lang="react">React</button>
+        </div>
+        <div class="tabpanel active" data-lang="python"><pre><span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
+
+<span class="kw">class</span> ReportSaver(ABC):
+    <span class="kw">@abstractmethod</span>
+    <span class="kw">def</span> save(self, report, filename): ...
+
+<span class="kw">class</span> TextFileSaver(ReportSaver):
+    <span class="kw">def</span> save(self, report, filename):
+        <span class="kw">with</span> open(filename, <span class="str">"w"</span>) <span class="kw">as</span> f:
+            f.write(report.generate_text())
+
+<span class="cm"># New format = new class. TextFileSaver never changes.</span>
+<span class="kw">class</span> JsonFileSaver(ReportSaver):
+    <span class="kw">def</span> save(self, report, filename):
+        json.dump({<span class="str">"title"</span>: report.title}, open(filename, <span class="str">"w"</span>))</pre></div>
+        <div class="tabpanel" data-lang="java"><pre><span class="kw">public interface</span> ReportSaver {
+    <span class="kw">void</span> save(Report report, String filename) <span class="kw">throws</span> IOException;
+}
+
+<span class="kw">public class</span> TextFileSaver <span class="kw">implements</span> ReportSaver {
+    <span class="kw">public void</span> save(Report r, String filename) <span class="kw">throws</span> IOException {
+        <span class="kw">try</span> (FileWriter w = <span class="kw">new</span> FileWriter(filename)) { w.write(r.generateText()); }
+    }
+}
+
+<span class="cm">// New format = new class. TextFileSaver never changes.</span>
+<span class="kw">public class</span> JsonFileSaver <span class="kw">implements</span> ReportSaver {
+    <span class="kw">public void</span> save(Report r, String filename) <span class="kw">throws</span> IOException { <span class="cm">/* ... */</span> }
+}</pre></div>
+        <div class="tabpanel" data-lang="csharp"><pre><span class="kw">public interface</span> IReportSaver
+{
+    <span class="kw">void</span> Save(Report report, <span class="kw">string</span> filename);
+}
+
+<span class="kw">public class</span> TextFileSaver : IReportSaver
+{
+    <span class="kw">public void</span> Save(Report r, <span class="kw">string</span> filename) =&gt;
+        File.WriteAllText(filename, r.GenerateText());
+}
+
+<span class="cm">// New format = new class. TextFileSaver never changes.</span>
+<span class="kw">public class</span> JsonFileSaver : IReportSaver
+{
+    <span class="kw">public void</span> Save(Report r, <span class="kw">string</span> filename) =&gt; <span class="cm">/* ... */</span>;
+}</pre></div>
+        <div class="tabpanel" data-lang="react"><pre><span class="cm">// The "interface" is just a function shape: (report, filename) =&gt; void</span>
+<span class="kw">const</span> saveAsText = (report, filename) =&gt;
+  writeFile(filename, formatReport(report));
+
+<span class="cm">// New format = new function. saveAsText never changes.</span>
+<span class="kw">const</span> saveAsJson = (report, filename) =&gt;
+  writeFile(filename, JSON.stringify(report));
+
+<span class="cm">// Component depends on whichever strategy is passed in.</span>
+<span class="kw">function</span> SaveButton({ report, filename, saveStrategy }) {
+  <span class="kw">return</span> &lt;button onClick={() =&gt; saveStrategy(report, filename)}&gt;Save&lt;/button&gt;;
+}</pre></div>
+      </div>
+
+      <!-- LSP -->
+      <h3 class="h3" id="lsp">L &mdash; Liskov Substitution Principle</h3>
+      <p>Any subtype must be swappable for its base type without breaking the caller. A <code>ReadOnlySaver</code> that throws on <code>save()</code> breaks every caller that trusted the base contract.</p>
+
+      <div class="ba-arrow-row">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11m0 0-4-4m4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span><strong style="color:var(--warn)">Before:</strong> every saver must implement <code>save()</code>, even a read-only one that can't &mdash; it throws at runtime, surprising any caller that trusted the contract. <strong style="color:var(--good)">After:</strong> a read-only class only ever claims the interface it can honor.</span>
+      </div>
+
+      <div class="why-when">
+        <div class="callout">
+          <span class="lbl">Violation</span>
+          <p>One fat interface (<code>save()</code> + <code>load()</code>) forces a read-only class to implement a method it can't honor &mdash; it throws instead.</p>
+        </div>
+        <div class="callout">
+          <span class="lbl">Fix</span>
+          <p>Split into narrow <code>Readable</code> / <code>Writable</code> interfaces. A class only implements what it can truly do &mdash; the broken substitution becomes unrepresentable.</p>
+        </div>
+      </div>
+
+      <div class="codeblock" data-block="lsp">
+        <div class="tabbar">
+          <button class="tabbtn active" data-lang="python">Python</button>
+          <button class="tabbtn" data-lang="java">Java</button>
+          <button class="tabbtn" data-lang="csharp">C#</button>
+          <button class="tabbtn" data-lang="react">React</button>
+        </div>
+        <div class="tabpanel active" data-lang="python"><pre><span class="cm"># Narrow interfaces instead of one fat ReportSaver</span>
+<span class="kw">class</span> Readable(ABC):
+    <span class="kw">@abstractmethod</span>
+    <span class="kw">def</span> load(self, filename): ...
+
+<span class="kw">class</span> Writable(ABC):
+    <span class="kw">@abstractmethod</span>
+    <span class="kw">def</span> save(self, text, filename): ...
+
+<span class="kw">class</span> TextFileSaver(Readable, Writable):
+    <span class="kw">def</span> save(self, text, filename): ...
+    <span class="kw">def</span> load(self, filename): ...
+
+<span class="cm"># Only claims Readable — no save() to violate.</span>
+<span class="kw">class</span> ReadOnlyTextSource(Readable):
+    <span class="kw">def</span> load(self, filename): ...</pre></div>
+        <div class="tabpanel" data-lang="java"><pre><span class="kw">public interface</span> Readable { String load(String filename); }
+<span class="kw">public interface</span> Writable { <span class="kw">void</span> save(String text, String filename); }
+
+<span class="kw">public class</span> TextFileSaver <span class="kw">implements</span> Readable, Writable {
+    <span class="kw">public void</span> save(String t, String f) { <span class="cm">/* ... */</span> }
+    <span class="kw">public</span> String load(String f) { <span class="cm">/* ... */</span> }
+}
+
+<span class="cm">// Only claims Readable — no save() to violate.</span>
+<span class="kw">public class</span> ReadOnlyTextSource <span class="kw">implements</span> Readable {
+    <span class="kw">public</span> String load(String f) { <span class="cm">/* ... */</span> }
+}</pre></div>
+        <div class="tabpanel" data-lang="csharp"><pre><span class="kw">public interface</span> IReadable { <span class="kw">string</span> Load(<span class="kw">string</span> filename); }
+<span class="kw">public interface</span> IWritable { <span class="kw">void</span> Save(<span class="kw">string</span> text, <span class="kw">string</span> filename); }
+
+<span class="kw">public class</span> TextFileSaver : IReadable, IWritable
+{
+    <span class="kw">public void</span> Save(<span class="kw">string</span> t, <span class="kw">string</span> f) { <span class="cm">/* ... */</span> }
+    <span class="kw">public string</span> Load(<span class="kw">string</span> f) =&gt; <span class="cm">/* ... */</span>;
+}
+
+<span class="cm">// Only claims IReadable — no Save() to violate.</span>
+<span class="kw">public class</span> ReadOnlyTextSource : IReadable
+{
+    <span class="kw">public string</span> Load(<span class="kw">string</span> f) =&gt; <span class="cm">/* ... */</span>;
+}</pre></div>
+        <div class="tabpanel" data-lang="react"><pre><span class="cm">// LSP in React shows up in prop contracts: a component that</span>
+<span class="cm">// promises onSave but sometimes can't call it breaks callers.</span>
+
+<span class="cm">// Broken: EditableList always expects onSave, but a read-only</span>
+<span class="cm">// mode silently no-ops it — surprising to any caller.</span>
+<span class="kw">function</span> BrokenList({ items, onSave, readOnly }) { <span class="cm">/* ... */</span> }
+
+<span class="cm">// Fixed: split into two components with honest prop contracts.</span>
+<span class="kw">function</span> ReadOnlyList({ items }) { <span class="cm">/* renders only */</span> }
+<span class="kw">function</span> EditableList({ items, onSave }) { <span class="cm">/* onSave always safe to call */</span> }</pre></div>
+      </div>
+
+      <!-- ISP -->
+      <h3 class="h3" id="isp">I &mdash; Interface Segregation Principle</h3>
+      <p>No client should depend on methods it doesn't use. This is the fix that made LSP hold above &mdash; <code>Readable</code> and <code>Writable</code> are the segregated interfaces in place of one bloated <code>ReportSaver</code>.</p>
+
+      <div class="ba-arrow-row">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11m0 0-4-4m4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span><strong style="color:var(--warn)">Before:</strong> one fat <code>ReportSaver</code> interface bundling <code>save()</code> and <code>load()</code> &mdash; implementers are forced to stub out methods they don't need. <strong style="color:var(--good)">After:</strong> narrow <code>Readable</code> / <code>Writable</code> interfaces, implemented independently.</span>
+      </div>
+
+      <div class="diagram-frame">
+        <svg viewBox="0 0 560 210" role="img" aria-labelledby="isp-svg-title">
+          <title id="isp-svg-title">UML: Readable and Writable interfaces, TextFileSaver implementing both, ReadOnlyTextSource implementing only Readable</title>
+          <g font-family="var(--mono)" font-size="12" fill="var(--ink)">
+            <rect x="30" y="16" width="140" height="46" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 2"/>
+            <text x="100" y="34" text-anchor="middle" font-style="italic" font-size="10.5">&laquo;interface&raquo;</text>
+            <text x="100" y="50" text-anchor="middle" font-weight="700">Readable</text>
+
+            <rect x="390" y="16" width="140" height="46" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 2"/>
+            <text x="460" y="34" text-anchor="middle" font-style="italic" font-size="10.5">&laquo;interface&raquo;</text>
+            <text x="460" y="50" text-anchor="middle" font-weight="700">Writable</text>
+
+            <rect x="200" y="140" width="160" height="50" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="280" y="170" text-anchor="middle" font-weight="700">TextFileSaver</text>
+
+            <rect x="10" y="140" width="160" height="50" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="90" y="163" text-anchor="middle" font-weight="700" font-size="11">ReadOnlyText-</text>
+            <text x="90" y="177" text-anchor="middle" font-weight="700" font-size="11">Source</text>
+
+            <line x1="100" y1="62" x2="90" y2="140" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+            <line x1="115" y1="62" x2="260" y2="140" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+            <line x1="460" y1="62" x2="300" y2="140" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+          </g>
+        </svg>
+        <div class="diagram-cap">A read-only source implements only Readable &mdash; it is never forced to carry Writable's contract.</div>
+      </div>
+
+      <div class="callout">
+        <span class="lbl">Rule of thumb</span>
+        <p>If implementers keep leaving methods empty or throwing "not supported," the interface is too fat. Split along what's actually always used together.</p>
+      </div>
+
+      <!-- DIP -->
+      <h3 class="h3" id="dip">D &mdash; Dependency Inversion Principle</h3>
+      <p>High-level code should depend on abstractions, not concrete low-level classes. A <code>ReportService</code> should take <em>any</em> <code>ReportSaver</code> via its constructor, not hardcode <code>new TextFileSaver()</code> inside itself.</p>
+
+      <div class="ba-arrow-row">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11m0 0-4-4m4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span><strong style="color:var(--warn)">Before:</strong> <code>ReportService</code> does <code>new TextFileSaver()</code> internally &mdash; swapping formats means editing ReportService itself. <strong style="color:var(--good)">After:</strong> the saver is passed into the constructor; ReportService only knows the abstraction.</span>
+      </div>
+
+      <div class="diagram-frame">
+        <svg viewBox="0 0 560 210" role="img" aria-labelledby="dip-svg-title">
+          <title id="dip-svg-title">UML: ReportService depends on ReportSaver interface; TextFileSaver and JsonFileSaver implement it and are injected</title>
+          <g font-family="var(--mono)" font-size="12" fill="var(--ink)">
+            <rect x="20" y="80" width="150" height="50" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="95" y="110" text-anchor="middle" font-weight="700">ReportService</text>
+
+            <rect x="220" y="80" width="150" height="50" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 2"/>
+            <text x="295" y="98" text-anchor="middle" font-style="italic" font-size="10">&laquo;interface&raquo;</text>
+            <text x="295" y="114" text-anchor="middle" font-weight="700">ReportSaver</text>
+
+            <rect x="420" y="16" width="130" height="44" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="485" y="43" text-anchor="middle" font-weight="700" font-size="11">TextFileSaver</text>
+
+            <rect x="420" y="150" width="130" height="44" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="485" y="177" text-anchor="middle" font-weight="700" font-size="11">JsonFileSaver</text>
+
+            <line x1="170" y1="105" x2="220" y2="105" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-open)"/>
+            <text x="178" y="98" font-size="9.5">depends on</text>
+
+            <line x1="450" y1="60" x2="380" y2="90" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+            <line x1="450" y1="150" x2="380" y2="120" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+          </g>
+        </svg>
+        <div class="diagram-cap">ReportService never names a concrete saver &mdash; the composition root decides which one to inject.</div>
+      </div>
+
+      <div class="codeblock" data-block="dip">
+        <div class="tabbar">
+          <button class="tabbtn active" data-lang="python">Python</button>
+          <button class="tabbtn" data-lang="java">Java</button>
+          <button class="tabbtn" data-lang="csharp">C#</button>
+          <button class="tabbtn" data-lang="react">React</button>
+        </div>
+        <div class="tabpanel active" data-lang="python"><pre><span class="kw">class</span> ReportService:
+    <span class="cm"># Depends on the ReportSaver abstraction, injected in.</span>
+    <span class="kw">def</span> __init__(self, printer, saver: ReportSaver):
+        self.printer, self.saver = printer, saver
+
+    <span class="kw">def</span> publish(self, report, filename):
+        self.printer.print(report.generate_text())
+        self.saver.save(report, filename)
+
+<span class="cm"># Composition root chooses the concrete type</span>
+service = ReportService(ReportPrinter(), JsonFileSaver())</pre></div>
+        <div class="tabpanel" data-lang="java"><pre><span class="kw">public class</span> ReportService {
+    <span class="kw">private final</span> ReportPrinter printer;
+    <span class="kw">private final</span> ReportSaver saver; <span class="cm">// abstraction, injected</span>
+
+    <span class="kw">public</span> ReportService(ReportPrinter printer, ReportSaver saver) {
+        <span class="kw">this</span>.printer = printer; <span class="kw">this</span>.saver = saver;
+    }
+
+    <span class="kw">public void</span> publish(Report r, String filename) <span class="kw">throws</span> IOException {
+        printer.print(r.generateText());
+        saver.save(r, filename);
+    }
+}
+<span class="cm">// Composition root chooses the concrete type</span>
+<span class="kw">new</span> ReportService(<span class="kw">new</span> ReportPrinter(), <span class="kw">new</span> JsonFileSaver());</pre></div>
+        <div class="tabpanel" data-lang="csharp"><pre><span class="kw">public class</span> ReportService
+{
+    <span class="kw">private readonly</span> ReportPrinter _printer;
+    <span class="kw">private readonly</span> IReportSaver _saver; <span class="cm">// abstraction, injected</span>
+
+    <span class="kw">public</span> ReportService(ReportPrinter printer, IReportSaver saver)
+    {
+        _printer = printer; _saver = saver;
+    }
+
+    <span class="kw">public void</span> Publish(Report r, <span class="kw">string</span> filename)
+    {
+        _printer.Print(r.GenerateText());
+        _saver.Save(r, filename);
+    }
+}
+<span class="cm">// Composition root (or DI container) chooses the concrete type</span>
+<span class="kw">new</span> ReportService(<span class="kw">new</span> ReportPrinter(), <span class="kw">new</span> JsonFileSaver());</pre></div>
+        <div class="tabpanel" data-lang="react"><pre><span class="cm">// DIP in React = accepting collaborators as props/params,</span>
+<span class="cm">// not importing a concrete implementation inside the component.</span>
+
+<span class="cm">// Depends on the *shape* saveStrategy, not a specific function.</span>
+<span class="kw">function</span> ReportPublisher({ report, filename, saveStrategy }) {
+  <span class="kw">useEffect</span>(() =&gt; {
+    saveStrategy(report, filename);
+  }, [report, filename, saveStrategy]);
+  <span class="kw">return</span> &lt;pre&gt;{formatReport(report.title, report.content)}&lt;/pre&gt;;
+}
+
+<span class="cm">// Composition root (parent / app shell) chooses the concrete strategy</span>
+&lt;ReportPublisher report={r} filename=<span class="str">"r.json"</span> saveStrategy={saveAsJson} /&gt;</pre></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- ADAPTER -->
+    <!-- ============================================================ -->
+    <section class="block wide" id="adapter">
+      <h2 class="h"><span class="num">04 / Structural</span>Adapter Pattern</h2>
+      <div class="meta-row">
+        <span class="pill">Structural</span>
+        <span class="pill">Wraps an incompatible interface</span>
+      </div>
+      <p class="lede" style="max-width: var(--measure)">Converts the interface of an existing class into one a client expects, without touching either side. The canonical case: you have a legacy or third-party class and can't change it.</p>
+
+      <div class="ba-wrap">
+        <div class="ba-grid">
+          <div class="ba-col before">
+            <div class="ba-head"><span class="dot"></span>Before &mdash; no pattern</div>
+            <pre><span class="cm"># Client code reaches directly into the legacy shape,</span>
+<span class="cm"># building XML by hand wherever a payment happens.</span>
+xml = <span class="str">f"&lt;payment&gt;&lt;amount&gt;{amount}&lt;/amount&gt;&lt;/payment&gt;"</span>
+result = legacy_gateway.submit_xml_payment(xml)
+ok = <span class="str">"OK"</span> <span class="kw">in</span> result
+
+<span class="cm"># Every call site repeats this translation.</span>
+<span class="cm"># Switch gateways later? Edit every call site.</span></pre>
+            <div class="ba-note">The XML-building logic leaks into every place a payment happens &mdash; and repeats.</div>
+          </div>
+          <div class="ba-col after">
+            <div class="ba-head"><span class="dot"></span>After &mdash; Adapter</div>
+            <pre><span class="cm"># Client code only ever calls the clean interface.</span>
+<span class="cm"># The translation lives in exactly one place: the adapter.</span>
+processor: PaymentProcessor = XmlGatewayAdapter(legacy_gateway)
+result = processor.pay(amount_cents)
+
+<span class="cm"># Swap gateways by swapping the adapter — zero call</span>
+<span class="cm"># sites change.</span></pre>
+            <div class="ba-note">See the full <code>XmlGatewayAdapter</code> implementation below.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diagram-frame">
+        <svg viewBox="0 0 620 200" role="img" aria-labelledby="adapter-svg-title">
+          <title id="adapter-svg-title">UML: Client depends on Target interface; Adapter implements Target and wraps Adaptee</title>
+          <g font-family="var(--mono)" font-size="12" fill="var(--ink)">
+            <rect x="10" y="80" width="110" height="46" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="65" y="107" text-anchor="middle" font-weight="700">Client</text>
+
+            <rect x="180" y="80" width="140" height="46" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 2"/>
+            <text x="250" y="98" text-anchor="middle" font-style="italic" font-size="10">&laquo;interface&raquo;</text>
+            <text x="250" y="114" text-anchor="middle" font-weight="700">Target</text>
+
+            <rect x="380" y="80" width="110" height="46" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="435" y="107" text-anchor="middle" font-weight="700">Adapter</text>
+
+            <rect x="500" y="80" width="110" height="46" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="555" y="100" text-anchor="middle" font-weight="700" font-size="11">Adaptee</text>
+            <text x="555" y="114" text-anchor="middle" font-size="9.5" fill="var(--ink-soft)">(legacy / 3rd-party)</text>
+
+            <line x1="120" y1="103" x2="180" y2="103" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-open)"/>
+            <line x1="380" y1="103" x2="320" y2="103" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+            <line x1="490" y1="103" x2="500" y2="103" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-open)"/>
+            <text x="495" y="94" font-size="9" text-anchor="middle">wraps</text>
+          </g>
+        </svg>
+        <div class="diagram-cap">Client only ever talks to Target; Adapter translates each call into whatever Adaptee actually expects.</div>
+      </div>
+
+      <h3 class="h3">Worked example: a legacy XML payment gateway behind a modern JSON interface</h3>
+
+      <div class="codeblock" data-block="adapter">
+        <div class="tabbar">
+          <button class="tabbtn active" data-lang="python">Python</button>
+          <button class="tabbtn" data-lang="java">Java</button>
+          <button class="tabbtn" data-lang="csharp">C#</button>
+          <button class="tabbtn" data-lang="react">React</button>
+        </div>
+        <div class="tabpanel active" data-lang="python"><pre><span class="cm"># Target — what the client wants to call</span>
+<span class="kw">class</span> PaymentProcessor(ABC):
+    <span class="kw">@abstractmethod</span>
+    <span class="kw">def</span> pay(self, amount_cents: int) -&gt; dict: ...
+
+<span class="cm"># Adaptee — legacy class we cannot change, XML-based</span>
+<span class="kw">class</span> LegacyXmlGateway:
+    <span class="kw">def</span> submit_xml_payment(self, xml_payload: str) -&gt; str:
+        <span class="cm"># ... calls a legacy SOAP/XML endpoint</span>
+        <span class="kw">return</span> <span class="str">"&lt;result&gt;OK&lt;/result&gt;"</span>
+
+<span class="cm"># Adapter — translates Target calls into Adaptee calls</span>
+<span class="kw">class</span> XmlGatewayAdapter(PaymentProcessor):
+    <span class="kw">def</span> __init__(self, legacy: LegacyXmlGateway):
+        self._legacy = legacy
+
+    <span class="kw">def</span> pay(self, amount_cents: int) -&gt; dict:
+        xml = <span class="str">f"&lt;payment&gt;&lt;amount&gt;{amount_cents}&lt;/amount&gt;&lt;/payment&gt;"</span>
+        result_xml = self._legacy.submit_xml_payment(xml)
+        <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"ok"</span> <span class="kw">if</span> <span class="str">"OK"</span> <span class="kw">in</span> result_xml <span class="kw">else</span> <span class="str">"failed"</span>}
+
+<span class="cm"># Client only ever sees PaymentProcessor</span>
+processor: PaymentProcessor = XmlGatewayAdapter(LegacyXmlGateway())
+processor.pay(4999)</pre></div>
+        <div class="tabpanel" data-lang="java"><pre><span class="cm">// Target</span>
+<span class="kw">public interface</span> PaymentProcessor {
+    Map&lt;String, String&gt; pay(<span class="kw">long</span> amountCents);
+}
+
+<span class="cm">// Adaptee — legacy class we cannot change</span>
+<span class="kw">public class</span> LegacyXmlGateway {
+    <span class="kw">public</span> String submitXmlPayment(String xmlPayload) {
+        <span class="kw">return</span> <span class="str">"&lt;result&gt;OK&lt;/result&gt;"</span>;
+    }
+}
+
+<span class="cm">// Adapter</span>
+<span class="kw">public class</span> XmlGatewayAdapter <span class="kw">implements</span> PaymentProcessor {
+    <span class="kw">private final</span> LegacyXmlGateway legacy;
+    <span class="kw">public</span> XmlGatewayAdapter(LegacyXmlGateway legacy) { <span class="kw">this</span>.legacy = legacy; }
+
+    <span class="kw">public</span> Map&lt;String, String&gt; pay(<span class="kw">long</span> amountCents) {
+        String xml = <span class="str">"&lt;payment&gt;&lt;amount&gt;"</span> + amountCents + <span class="str">"&lt;/amount&gt;&lt;/payment&gt;"</span>;
+        String result = legacy.submitXmlPayment(xml);
+        <span class="kw">return</span> Map.of(<span class="str">"status"</span>, result.contains(<span class="str">"OK"</span>) ? <span class="str">"ok"</span> : <span class="str">"failed"</span>);
+    }
+}
+
+PaymentProcessor processor = <span class="kw">new</span> XmlGatewayAdapter(<span class="kw">new</span> LegacyXmlGateway());</pre></div>
+        <div class="tabpanel" data-lang="csharp"><pre><span class="cm">// Target</span>
+<span class="kw">public interface</span> IPaymentProcessor
+{
+    Dictionary&lt;<span class="kw">string</span>, <span class="kw">string</span>&gt; Pay(<span class="kw">long</span> amountCents);
+}
+
+<span class="cm">// Adaptee — legacy class we cannot change</span>
+<span class="kw">public class</span> LegacyXmlGateway
+{
+    <span class="kw">public string</span> SubmitXmlPayment(<span class="kw">string</span> xmlPayload) =&gt; <span class="str">"&lt;result&gt;OK&lt;/result&gt;"</span>;
+}
+
+<span class="cm">// Adapter</span>
+<span class="kw">public class</span> XmlGatewayAdapter : IPaymentProcessor
+{
+    <span class="kw">private readonly</span> LegacyXmlGateway _legacy;
+    <span class="kw">public</span> XmlGatewayAdapter(LegacyXmlGateway legacy) =&gt; _legacy = legacy;
+
+    <span class="kw">public</span> Dictionary&lt;<span class="kw">string</span>, <span class="kw">string</span>&gt; Pay(<span class="kw">long</span> amountCents)
+    {
+        <span class="kw">var</span> xml = $<span class="str">"&lt;payment&gt;&lt;amount&gt;{amountCents}&lt;/amount&gt;&lt;/payment&gt;"</span>;
+        <span class="kw">var</span> result = _legacy.SubmitXmlPayment(xml);
+        <span class="kw">return new</span>() { [<span class="str">"status"</span>] = result.Contains(<span class="str">"OK"</span>) ? <span class="str">"ok"</span> : <span class="str">"failed"</span> };
+    }
+}
+
+IPaymentProcessor processor = <span class="kw">new</span> XmlGatewayAdapter(<span class="kw">new</span> LegacyXmlGateway());</pre></div>
+        <div class="tabpanel" data-lang="react"><pre><span class="cm">// Adapter as a hook: wraps a legacy callback-based SDK</span>
+<span class="cm">// behind the promise-based interface the rest of the app expects.</span>
+
+<span class="cm">// Adaptee — a legacy analytics SDK using callbacks, not promises</span>
+<span class="cm">// window.legacyAnalytics.track(event, cb)</span>
+
+<span class="cm">// Adapter</span>
+<span class="kw">function</span> useAnalytics() {
+  <span class="kw">function</span> track(event) {
+    <span class="kw">return new</span> Promise((resolve, reject) =&gt; {
+      window.legacyAnalytics.track(event, (err, res) =&gt;
+        err ? reject(err) : resolve(res)
+      );
+    });
+  }
+  <span class="kw">return</span> { track }; <span class="cm">// components only ever see this promise-based shape</span>
+}
+
+<span class="cm">// Client — never touches the callback API directly</span>
+<span class="kw">function</span> BuyButton() {
+  <span class="kw">const</span> { track } = useAnalytics();
+  <span class="kw">return</span> &lt;button onClick={() =&gt; track(<span class="str">"purchase"</span>)}&gt;Buy&lt;/button&gt;;
+}</pre></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- DECORATOR -->
+    <!-- ============================================================ -->
+    <section class="block wide" id="decorator">
+      <h2 class="h"><span class="num">05 / Structural</span>Decorator Pattern</h2>
+      <div class="meta-row">
+        <span class="pill">Structural</span>
+        <span class="pill">Adds behavior without subclassing</span>
+      </div>
+      <p class="lede" style="max-width: var(--measure)">Wraps an object to layer new behavior on top, while keeping the same interface. Classic interview prompt: <strong>coffee with add-ons</strong> &mdash; each topping wraps the previous object and adds to cost/description.</p>
+
+      <div class="ba-wrap">
+        <div class="ba-grid">
+          <div class="ba-col before">
+            <div class="ba-head"><span class="dot"></span>Before &mdash; no pattern</div>
+            <pre><span class="cm"># One class, a boolean flag per topping. Every new</span>
+<span class="cm"># topping adds a constructor param and an if-branch —</span>
+<span class="cm"># and the combinations grow exponentially.</span>
+<span class="kw">class</span> Coffee:
+    <span class="kw">def</span> __init__(self, milk=<span class="kw">False</span>, sugar=<span class="kw">False</span>):
+        self.milk, self.sugar = milk, sugar
+
+    <span class="kw">def</span> cost(self):
+        total = 2.00
+        <span class="kw">if</span> self.milk:  total += 0.50
+        <span class="kw">if</span> self.sugar: total += 0.25
+        <span class="kw">return</span> total  <span class="cm"># whip, syrup, oat milk... this keeps growing</span></pre>
+            <div class="ba-note">A 5th topping means a 5th flag, a 5th if-branch, and a class that never stops changing.</div>
+          </div>
+          <div class="ba-col after">
+            <div class="ba-head"><span class="dot"></span>After &mdash; Decorator</div>
+            <pre><span class="cm"># Each topping is its own class that wraps whatever</span>
+<span class="cm"># came before it — Coffee never changes again.</span>
+drink = Milk(Sugar(Espresso()))
+drink.cost()  <span class="cm"># 2.75 — computed by delegation, layer by layer</span>
+
+<span class="cm"># A new topping (Whip) is a new 5-line class,</span>
+<span class="cm"># with zero edits to Coffee, Milk, or Sugar.</span></pre>
+            <div class="ba-note">See the full <code>Milk</code> / <code>Sugar</code> decorator classes below.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diagram-frame">
+        <svg viewBox="0 0 620 230" role="img" aria-labelledby="decorator-svg-title">
+          <title id="decorator-svg-title">UML: Beverage interface, Espresso as concrete component, Decorator abstract wraps a Beverage, Milk and Sugar as concrete decorators</title>
+          <g font-family="var(--mono)" font-size="12" fill="var(--ink)">
+            <rect x="230" y="10" width="140" height="46" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 2"/>
+            <text x="300" y="28" text-anchor="middle" font-style="italic" font-size="10">&laquo;interface&raquo;</text>
+            <text x="300" y="44" text-anchor="middle" font-weight="700">Beverage</text>
+
+            <rect x="40" y="100" width="120" height="46" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="100" y="127" text-anchor="middle" font-weight="700" font-size="11">Espresso</text>
+
+            <rect x="230" y="100" width="140" height="46" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="300" y="120" text-anchor="middle" font-weight="700" font-size="11">Decorator</text>
+            <text x="300" y="134" text-anchor="middle" font-size="9.5" fill="var(--ink-soft)">(wraps a Beverage)</text>
+
+            <rect x="440" y="170" width="80" height="44" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="480" y="196" text-anchor="middle" font-weight="700" font-size="11">Milk</text>
+
+            <rect x="530" y="100" width="80" height="44" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="570" y="126" text-anchor="middle" font-weight="700" font-size="11">Sugar</text>
+
+            <line x1="100" y1="100" x2="240" y2="56" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+            <line x1="300" y1="100" x2="300" y2="56" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+            <line x1="480" y1="170" x2="330" y2="146" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+            <line x1="570" y1="100" x2="360" y2="115" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+            <line x1="370" y1="123" x2="435" y2="180" stroke="var(--ink-soft)" stroke-width="1.1" stroke-dasharray="2 2" marker-end="url(#arrow-open)"/>
+            <text x="378" y="160" font-size="9">holds a</text>
+          </g>
+        </svg>
+        <div class="diagram-cap">Milk(Sugar(Espresso())) &mdash; each layer implements Beverage and delegates to the one it wraps.</div>
+      </div>
+
+      <div class="codeblock" data-block="decorator">
+        <div class="tabbar">
+          <button class="tabbtn active" data-lang="python">Python</button>
+          <button class="tabbtn" data-lang="java">Java</button>
+          <button class="tabbtn" data-lang="csharp">C#</button>
+          <button class="tabbtn" data-lang="react">React</button>
+        </div>
+        <div class="tabpanel active" data-lang="python"><pre><span class="kw">class</span> Beverage(ABC):
+    <span class="kw">@abstractmethod</span>
+    <span class="kw">def</span> cost(self) -&gt; float: ...
+    <span class="kw">@abstractmethod</span>
+    <span class="kw">def</span> description(self) -&gt; str: ...
+
+<span class="kw">class</span> Espresso(Beverage):
+    <span class="kw">def</span> cost(self): <span class="kw">return</span> 2.00
+    <span class="kw">def</span> description(self): <span class="kw">return</span> <span class="str">"Espresso"</span>
+
+<span class="kw">class</span> BeverageDecorator(Beverage):
+    <span class="kw">def</span> __init__(self, wrapped: Beverage):
+        self._wrapped = wrapped
+
+<span class="kw">class</span> Milk(BeverageDecorator):
+    <span class="kw">def</span> cost(self): <span class="kw">return</span> self._wrapped.cost() + 0.50
+    <span class="kw">def</span> description(self): <span class="kw">return</span> self._wrapped.description() + <span class="str">" + Milk"</span>
+
+<span class="kw">class</span> Sugar(BeverageDecorator):
+    <span class="kw">def</span> cost(self): <span class="kw">return</span> self._wrapped.cost() + 0.25
+    <span class="kw">def</span> description(self): <span class="kw">return</span> self._wrapped.description() + <span class="str">" + Sugar"</span>
+
+drink = Milk(Sugar(Espresso()))
+<span class="kw">print</span>(drink.description(), drink.cost())  <span class="cm"># Espresso + Sugar + Milk 2.75</span></pre></div>
+        <div class="tabpanel" data-lang="java"><pre><span class="kw">public interface</span> Beverage {
+    <span class="kw">double</span> cost();
+    String description();
+}
+
+<span class="kw">public class</span> Espresso <span class="kw">implements</span> Beverage {
+    <span class="kw">public double</span> cost() { <span class="kw">return</span> 2.00; }
+    <span class="kw">public</span> String description() { <span class="kw">return</span> <span class="str">"Espresso"</span>; }
+}
+
+<span class="kw">public abstract class</span> BeverageDecorator <span class="kw">implements</span> Beverage {
+    <span class="kw">protected final</span> Beverage wrapped;
+    <span class="kw">protected</span> BeverageDecorator(Beverage wrapped) { <span class="kw">this</span>.wrapped = wrapped; }
+}
+
+<span class="kw">public class</span> Milk <span class="kw">extends</span> BeverageDecorator {
+    <span class="kw">public</span> Milk(Beverage w) { <span class="kw">super</span>(w); }
+    <span class="kw">public double</span> cost() { <span class="kw">return</span> wrapped.cost() + 0.50; }
+    <span class="kw">public</span> String description() { <span class="kw">return</span> wrapped.description() + <span class="str">" + Milk"</span>; }
+}
+
+Beverage drink = <span class="kw">new</span> Milk(<span class="kw">new</span> Espresso());</pre></div>
+        <div class="tabpanel" data-lang="csharp"><pre><span class="kw">public interface</span> IBeverage
+{
+    <span class="kw">decimal</span> Cost();
+    <span class="kw">string</span> Description();
+}
+
+<span class="kw">public class</span> Espresso : IBeverage
+{
+    <span class="kw">public decimal</span> Cost() =&gt; 2.00m;
+    <span class="kw">public string</span> Description() =&gt; <span class="str">"Espresso"</span>;
+}
+
+<span class="kw">public abstract class</span> BeverageDecorator : IBeverage
+{
+    <span class="kw">protected readonly</span> IBeverage Wrapped;
+    <span class="kw">protected</span> BeverageDecorator(IBeverage wrapped) =&gt; Wrapped = wrapped;
+    <span class="kw">public abstract decimal</span> Cost();
+    <span class="kw">public abstract string</span> Description();
+}
+
+<span class="kw">public class</span> Milk : BeverageDecorator
+{
+    <span class="kw">public</span> Milk(IBeverage w) : <span class="kw">base</span>(w) { }
+    <span class="kw">public override decimal</span> Cost() =&gt; Wrapped.Cost() + 0.50m;
+    <span class="kw">public override string</span> Description() =&gt; Wrapped.Description() + <span class="str">" + Milk"</span>;
+}
+
+IBeverage drink = <span class="kw">new</span> Milk(<span class="kw">new</span> Espresso());</pre></div>
+        <div class="tabpanel" data-lang="react"><pre><span class="cm">// Decorator maps naturally onto Higher-Order Components (HOCs)</span>
+<span class="cm">// or composed wrapper components — each layer adds behavior</span>
+<span class="cm">// while preserving the same rendered shape.</span>
+
+<span class="kw">function</span> withLoadingSpinner(Wrapped) {
+  <span class="kw">return function</span> Decorated(props) {
+    <span class="kw">if</span> (props.loading) <span class="kw">return</span> &lt;Spinner /&gt;;
+    <span class="kw">return</span> &lt;Wrapped {...props} /&gt;;
+  };
+}
+
+<span class="kw">function</span> withErrorBoundary(Wrapped) {
+  <span class="kw">return function</span> Decorated(props) {
+    <span class="kw">return</span> (
+      &lt;ErrorBoundary&gt;&lt;Wrapped {...props} /&gt;&lt;/ErrorBoundary&gt;
+    );
+  };
+}
+
+<span class="cm">// Layered exactly like Milk(Sugar(Espresso()))</span>
+<span class="kw">const</span> SafeDashboard = withErrorBoundary(withLoadingSpinner(Dashboard));</pre></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- STRATEGY -->
+    <!-- ============================================================ -->
+    <section class="block wide" id="strategy">
+      <h2 class="h"><span class="num">06 / Behavioral</span>Strategy Pattern</h2>
+      <div class="meta-row">
+        <span class="pill">Behavioral</span>
+        <span class="pill">Swaps an algorithm at runtime</span>
+      </div>
+      <p class="lede" style="max-width: var(--measure)">Defines a family of interchangeable algorithms behind one interface, chosen by the caller. Interview staple: <strong>payment methods</strong> (credit card, PayPal, crypto) or <strong>sort/compression strategies</strong>.</p>
+
+      <div class="ba-wrap">
+        <div class="ba-grid">
+          <div class="ba-col before">
+            <div class="ba-head"><span class="dot"></span>Before &mdash; no pattern</div>
+            <pre><span class="cm"># Cart knows about every payment method directly.</span>
+<span class="cm"># Adding crypto means editing Cart's checkout method.</span>
+<span class="kw">class</span> Cart:
+    <span class="kw">def</span> checkout(self, amount, method):
+        <span class="kw">if</span> method == <span class="str">"card"</span>:
+            <span class="kw">return</span> <span class="str">f"Charged ${amount} to card"</span>
+        <span class="kw">elif</span> method == <span class="str">"paypal"</span>:
+            <span class="kw">return</span> <span class="str">f"Sent ${amount} via PayPal"</span>
+        <span class="cm"># every new method = another elif, forever</span></pre>
+            <div class="ba-note">Cart is coupled to every payment provider that ever gets added.</div>
+          </div>
+          <div class="ba-col after">
+            <div class="ba-head"><span class="dot"></span>After &mdash; Strategy</div>
+            <pre><span class="cm"># Cart holds a strategy object — it doesn't know or</span>
+<span class="cm"># care which one. New methods never touch Cart.</span>
+<span class="kw">class</span> Cart:
+    <span class="kw">def</span> __init__(self, strategy):
+        self.strategy = strategy
+
+    <span class="kw">def</span> checkout(self, amount):
+        <span class="kw">return</span> self.strategy.pay(amount)</pre>
+            <div class="ba-note">See the full <code>PaymentStrategy</code> hierarchy below.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diagram-frame">
+        <svg viewBox="0 0 560 210" role="img" aria-labelledby="strategy-svg-title">
+          <title id="strategy-svg-title">UML: Context holds a Strategy interface; CreditCardStrategy and PayPalStrategy implement it</title>
+          <g font-family="var(--mono)" font-size="12" fill="var(--ink)">
+            <rect x="20" y="80" width="130" height="46" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="85" y="107" text-anchor="middle" font-weight="700">Cart</text>
+            <text x="85" y="92" text-anchor="middle" font-size="9" fill="var(--ink-soft)">(Context)</text>
+
+            <rect x="220" y="80" width="150" height="46" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 2"/>
+            <text x="295" y="98" text-anchor="middle" font-style="italic" font-size="10">&laquo;interface&raquo;</text>
+            <text x="295" y="114" text-anchor="middle" font-weight="700">PaymentStrategy</text>
+
+            <rect x="420" y="16" width="130" height="44" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="485" y="43" text-anchor="middle" font-weight="700" font-size="10.5">CreditCardStrategy</text>
+
+            <rect x="420" y="150" width="130" height="44" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="485" y="177" text-anchor="middle" font-weight="700" font-size="11">PayPalStrategy</text>
+
+            <line x1="150" y1="103" x2="220" y2="103" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-open)"/>
+            <text x="158" y="96" font-size="9">has a</text>
+            <line x1="450" y1="60" x2="380" y2="90" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+            <line x1="450" y1="150" x2="380" y2="120" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+          </g>
+        </svg>
+        <div class="diagram-cap">Cart holds a PaymentStrategy reference and calls pay() &mdash; it never knows which concrete strategy it holds.</div>
+      </div>
+
+      <div class="codeblock" data-block="strategy">
+        <div class="tabbar">
+          <button class="tabbtn active" data-lang="python">Python</button>
+          <button class="tabbtn" data-lang="java">Java</button>
+          <button class="tabbtn" data-lang="csharp">C#</button>
+          <button class="tabbtn" data-lang="react">React</button>
+        </div>
+        <div class="tabpanel active" data-lang="python"><pre><span class="kw">class</span> PaymentStrategy(ABC):
+    <span class="kw">@abstractmethod</span>
+    <span class="kw">def</span> pay(self, amount: float) -&gt; str: ...
+
+<span class="kw">class</span> CreditCardStrategy(PaymentStrategy):
+    <span class="kw">def</span> pay(self, amount): <span class="kw">return</span> <span class="str">f"Charged ${amount} to card"</span>
+
+<span class="kw">class</span> PayPalStrategy(PaymentStrategy):
+    <span class="kw">def</span> pay(self, amount): <span class="kw">return</span> <span class="str">f"Sent ${amount} via PayPal"</span>
+
+<span class="kw">class</span> Cart:
+    <span class="kw">def</span> __init__(self, strategy: PaymentStrategy):
+        self.strategy = strategy  <span class="cm"># swappable at runtime</span>
+
+    <span class="kw">def</span> checkout(self, amount):
+        <span class="kw">return</span> self.strategy.pay(amount)
+
+Cart(PayPalStrategy()).checkout(49.99)</pre></div>
+        <div class="tabpanel" data-lang="java"><pre><span class="kw">public interface</span> PaymentStrategy {
+    String pay(<span class="kw">double</span> amount);
+}
+
+<span class="kw">public class</span> CreditCardStrategy <span class="kw">implements</span> PaymentStrategy {
+    <span class="kw">public</span> String pay(<span class="kw">double</span> amount) { <span class="kw">return</span> <span class="str">"Charged $"</span> + amount + <span class="str">" to card"</span>; }
+}
+
+<span class="kw">public class</span> Cart {
+    <span class="kw">private</span> PaymentStrategy strategy; <span class="cm">// swappable at runtime</span>
+    <span class="kw">public</span> Cart(PaymentStrategy strategy) { <span class="kw">this</span>.strategy = strategy; }
+
+    <span class="kw">public</span> String checkout(<span class="kw">double</span> amount) { <span class="kw">return</span> strategy.pay(amount); }
+}
+
+<span class="kw">new</span> Cart(<span class="kw">new</span> PayPalStrategy()).checkout(49.99);</pre></div>
+        <div class="tabpanel" data-lang="csharp"><pre><span class="kw">public interface</span> IPaymentStrategy
+{
+    <span class="kw">string</span> Pay(<span class="kw">decimal</span> amount);
+}
+
+<span class="kw">public class</span> CreditCardStrategy : IPaymentStrategy
+{
+    <span class="kw">public string</span> Pay(<span class="kw">decimal</span> amount) =&gt; $<span class="str">"Charged ${amount} to card"</span>;
+}
+
+<span class="kw">public class</span> Cart
+{
+    <span class="kw">private readonly</span> IPaymentStrategy _strategy; <span class="cm">// swappable at runtime</span>
+    <span class="kw">public</span> Cart(IPaymentStrategy strategy) =&gt; _strategy = strategy;
+
+    <span class="kw">public string</span> Checkout(<span class="kw">decimal</span> amount) =&gt; _strategy.Pay(amount);
+}
+
+<span class="kw">new</span> Cart(<span class="kw">new</span> PayPalStrategy()).Checkout(49.99m);</pre></div>
+        <div class="tabpanel" data-lang="react"><pre><span class="cm">// Strategy is just "which function do I call" — pass it as a prop.</span>
+<span class="kw">const</span> creditCardStrategy = (amount) =&gt; <span class="str">`Charged $${amount} to card`</span>;
+<span class="kw">const</span> paypalStrategy   = (amount) =&gt; <span class="str">`Sent $${amount} via PayPal`</span>;
+
+<span class="kw">function</span> Checkout({ amount, strategy }) {
+  <span class="cm">// Context (Checkout) never knows which strategy it received.</span>
+  <span class="kw">const</span> [result, setResult] = useState(<span class="kw">null</span>);
+  <span class="kw">return</span> (
+    &lt;button onClick={() =&gt; setResult(strategy(amount))}&gt;
+      Pay {result &amp;&amp; <span class="str">`— ${result}`</span>}
+    &lt;/button&gt;
+  );
+}
+
+&lt;Checkout amount={49.99} strategy={paypalStrategy} /&gt;</pre></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- STATE -->
+    <!-- ============================================================ -->
+    <section class="block wide" id="state">
+      <h2 class="h"><span class="num">07 / Behavioral</span>State Pattern</h2>
+      <div class="meta-row">
+        <span class="pill">Behavioral</span>
+        <span class="pill">Behavior changes with internal state</span>
+      </div>
+      <p class="lede" style="max-width: var(--measure)">An object appears to change its class as its internal state changes &mdash; each state is its own class implementing the same interface, replacing long <code>if/elif</code> chains on a status field. Interview staple: <strong>order lifecycle</strong> (placed &rarr; shipped &rarr; delivered) or a <strong>traffic light</strong>.</p>
+
+      <div class="ba-wrap">
+        <div class="ba-grid">
+          <div class="ba-col before">
+            <div class="ba-head"><span class="dot"></span>Before &mdash; no pattern</div>
+            <pre><span class="cm"># A status string plus an if/elif chain, repeated</span>
+<span class="cm"># everywhere the order's behavior depends on status.</span>
+<span class="kw">class</span> Order:
+    <span class="kw">def</span> __init__(self):
+        self.status = <span class="str">"placed"</span>
+
+    <span class="kw">def</span> advance(self):
+        <span class="kw">if</span> self.status == <span class="str">"placed"</span>:
+            self.status = <span class="str">"shipped"</span>
+        <span class="kw">elif</span> self.status == <span class="str">"shipped"</span>:
+            self.status = <span class="str">"delivered"</span>
+        <span class="cm"># every new status = another elif, and this logic</span>
+        <span class="cm"># gets copy-pasted anywhere status is checked</span></pre>
+            <div class="ba-note">The valid-transitions rule is implicit, scattered, and easy to get wrong.</div>
+          </div>
+          <div class="ba-col after">
+            <div class="ba-head"><span class="dot"></span>After &mdash; State</div>
+            <pre><span class="cm"># Each status is its own class; Order just delegates.</span>
+<span class="cm"># Invalid transitions become structurally impossible.</span>
+<span class="kw">class</span> Order:
+    <span class="kw">def</span> __init__(self):
+        self.state = Placed()
+
+    <span class="kw">def</span> advance(self):
+        self.state.next(self)</pre>
+            <div class="ba-note">See the full <code>Placed</code> / <code>Shipped</code> / <code>Delivered</code> classes below.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diagram-frame">
+        <svg viewBox="0 0 640 220" role="img" aria-labelledby="state-svg-title">
+          <title id="state-svg-title">UML: Order holds a State; OrderState interface with Placed, Shipped, Delivered implementations forming a cycle via next()</title>
+          <g font-family="var(--mono)" font-size="12" fill="var(--ink)">
+            <rect x="250" y="10" width="140" height="44" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="320" y="37" text-anchor="middle" font-weight="700">Order</text>
+            <text x="320" y="24" text-anchor="middle" font-size="9" fill="var(--ink-soft)">(Context)</text>
+
+            <rect x="250" y="90" width="140" height="44" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 2"/>
+            <text x="320" y="108" text-anchor="middle" font-style="italic" font-size="10">&laquo;interface&raquo;</text>
+            <text x="320" y="124" text-anchor="middle" font-weight="700">OrderState</text>
+
+            <rect x="20" y="170" width="120" height="40" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="80" y="195" text-anchor="middle" font-weight="700" font-size="10.5">PlacedState</text>
+
+            <rect x="260" y="170" width="120" height="40" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="320" y="195" text-anchor="middle" font-weight="700" font-size="10.5">ShippedState</text>
+
+            <rect x="500" y="170" width="120" height="40" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="560" y="195" text-anchor="middle" font-weight="700" font-size="9.5">DeliveredState</text>
+
+            <line x1="320" y1="54" x2="320" y2="90" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-open)"/>
+            <text x="326" y="75" font-size="9">holds</text>
+
+            <line x1="80" y1="170" x2="270" y2="130" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+            <line x1="320" y1="170" x2="320" y2="134" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+            <line x1="560" y1="170" x2="370" y2="128" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+
+            <path d="M140,190 L260,190" stroke="var(--accent)" stroke-width="1.3" marker-end="url(#arrow-open)"/>
+            <text x="200" y="182" font-size="9.5" fill="var(--accent)" text-anchor="middle">next()</text>
+            <path d="M380,190 L500,190" stroke="var(--accent)" stroke-width="1.3" marker-end="url(#arrow-open)"/>
+            <text x="440" y="182" font-size="9.5" fill="var(--accent)" text-anchor="middle">next()</text>
+          </g>
+        </svg>
+        <div class="diagram-cap">Order delegates to its current state object; calling next() swaps in the following state.</div>
+      </div>
+
+      <div class="codeblock" data-block="state">
+        <div class="tabbar">
+          <button class="tabbtn active" data-lang="python">Python</button>
+          <button class="tabbtn" data-lang="java">Java</button>
+          <button class="tabbtn" data-lang="csharp">C#</button>
+          <button class="tabbtn" data-lang="react">React</button>
+        </div>
+        <div class="tabpanel active" data-lang="python"><pre><span class="kw">class</span> OrderState(ABC):
+    <span class="kw">@abstractmethod</span>
+    <span class="kw">def</span> next(self, order): ...
+    <span class="kw">@abstractmethod</span>
+    <span class="kw">def</span> name(self) -&gt; str: ...
+
+<span class="kw">class</span> Placed(OrderState):
+    <span class="kw">def</span> next(self, order): order.state = Shipped()
+    <span class="kw">def</span> name(self): <span class="kw">return</span> <span class="str">"placed"</span>
+
+<span class="kw">class</span> Shipped(OrderState):
+    <span class="kw">def</span> next(self, order): order.state = Delivered()
+    <span class="kw">def</span> name(self): <span class="kw">return</span> <span class="str">"shipped"</span>
+
+<span class="kw">class</span> Delivered(OrderState):
+    <span class="kw">def</span> next(self, order): <span class="kw">pass</span>  <span class="cm"># terminal</span>
+    <span class="kw">def</span> name(self): <span class="kw">return</span> <span class="str">"delivered"</span>
+
+<span class="kw">class</span> Order:
+    <span class="kw">def</span> __init__(self):
+        self.state: OrderState = Placed()  <span class="cm"># behavior lives in the state object</span>
+
+    <span class="kw">def</span> advance(self):
+        self.state.next(self)</pre></div>
+        <div class="tabpanel" data-lang="java"><pre><span class="kw">public interface</span> OrderState {
+    <span class="kw">void</span> next(Order order);
+    String name();
+}
+
+<span class="kw">public class</span> Placed <span class="kw">implements</span> OrderState {
+    <span class="kw">public void</span> next(Order o) { o.setState(<span class="kw">new</span> Shipped()); }
+    <span class="kw">public</span> String name() { <span class="kw">return</span> <span class="str">"placed"</span>; }
+}
+
+<span class="kw">public class</span> Shipped <span class="kw">implements</span> OrderState {
+    <span class="kw">public void</span> next(Order o) { o.setState(<span class="kw">new</span> Delivered()); }
+    <span class="kw">public</span> String name() { <span class="kw">return</span> <span class="str">"shipped"</span>; }
+}
+
+<span class="kw">public class</span> Order {
+    <span class="kw">private</span> OrderState state = <span class="kw">new</span> Placed(); <span class="cm">// behavior lives in the state object</span>
+    <span class="kw">public void</span> advance() { state.next(<span class="kw">this</span>); }
+    <span class="kw">public void</span> setState(OrderState s) { state = s; }
+}</pre></div>
+        <div class="tabpanel" data-lang="csharp"><pre><span class="kw">public interface</span> IOrderState
+{
+    <span class="kw">void</span> Next(Order order);
+    <span class="kw">string</span> Name { <span class="kw">get</span>; }
+}
+
+<span class="kw">public class</span> Placed : IOrderState
+{
+    <span class="kw">public void</span> Next(Order o) =&gt; o.State = <span class="kw">new</span> Shipped();
+    <span class="kw">public string</span> Name =&gt; <span class="str">"placed"</span>;
+}
+
+<span class="kw">public class</span> Shipped : IOrderState
+{
+    <span class="kw">public void</span> Next(Order o) =&gt; o.State = <span class="kw">new</span> Delivered();
+    <span class="kw">public string</span> Name =&gt; <span class="str">"shipped"</span>;
+}
+
+<span class="kw">public class</span> Order
+{
+    <span class="kw">public</span> IOrderState State { <span class="kw">get</span>; <span class="kw">set</span>; } = <span class="kw">new</span> Placed(); <span class="cm">// behavior lives here</span>
+    <span class="kw">public void</span> Advance() =&gt; State.Next(<span class="kw">this</span>);
+}</pre></div>
+        <div class="tabpanel" data-lang="react"><pre><span class="cm">// State pattern in React usually surfaces as a state machine —</span>
+<span class="cm">// each state maps to what's rendered AND what actions are valid.</span>
+
+<span class="kw">const</span> transitions = {
+  placed:    { next: <span class="str">"shipped"</span> },
+  shipped:   { next: <span class="str">"delivered"</span> },
+  delivered: { next: <span class="kw">null</span> }, <span class="cm">// terminal</span>
+};
+
+<span class="kw">function</span> useOrderState(initial = <span class="str">"placed"</span>) {
+  <span class="kw">const</span> [state, setState] = useState(initial);
+  <span class="kw">const</span> advance = () =&gt; {
+    <span class="kw">const</span> next = transitions[state].next;
+    <span class="kw">if</span> (next) setState(next); <span class="cm">// only valid transitions are reachable</span>
+  };
+  <span class="kw">return</span> { state, advance };
+}
+
+<span class="kw">function</span> OrderTracker() {
+  <span class="kw">const</span> { state, advance } = useOrderState();
+  <span class="kw">return</span> &lt;button onClick={advance}&gt;Status: {state}&lt;/button&gt;;
+}</pre></div>
+      </div>
+
+      <div class="callout">
+        <span class="lbl">Strategy vs. State &mdash; the interview trap</span>
+        <p>Same UML shape (context holds an interface, concrete classes implement it). The difference is intent: Strategy is chosen once by the <em>caller</em> and doesn't change itself; State is switched by the <em>object itself</em> as a reaction to its own lifecycle.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- OBSERVER -->
+    <!-- ============================================================ -->
+    <section class="block wide" id="observer">
+      <h2 class="h"><span class="num">08 / Behavioral</span>Observer Pattern</h2>
+      <div class="meta-row">
+        <span class="pill">Behavioral</span>
+        <span class="pill">One-to-many change notification</span>
+      </div>
+      <p class="lede" style="max-width: var(--measure)">A subject maintains a list of dependents and notifies them automatically of any state change. Interview staple: <strong>stock ticker</strong>, <strong>event emitters</strong>, or any pub/sub system.</p>
+
+      <div class="ba-wrap">
+        <div class="ba-grid">
+          <div class="ba-col before">
+            <div class="ba-head"><span class="dot"></span>Before &mdash; no pattern</div>
+            <pre><span class="cm"># StockTicker calls each interested piece of code by name.</span>
+<span class="cm"># Adding a new listener means editing set_price itself.</span>
+<span class="kw">class</span> StockTicker:
+    <span class="kw">def</span> set_price(self, price):
+        self.price = price
+        price_display.update(price)   <span class="cm"># hardcoded</span>
+        price_logger.update(price)    <span class="cm"># hardcoded</span>
+        <span class="cm"># new listener? another line here, every time</span></pre>
+            <div class="ba-note">StockTicker must know every listener's name and type up front.</div>
+          </div>
+          <div class="ba-col after">
+            <div class="ba-head"><span class="dot"></span>After &mdash; Observer</div>
+            <pre><span class="cm"># Listeners register themselves; StockTicker just</span>
+<span class="cm"># iterates whoever's attached, without knowing who.</span>
+<span class="kw">class</span> StockTicker:
+    <span class="kw">def</span> set_price(self, price):
+        self.price = price
+        <span class="kw">for</span> obs <span class="kw">in</span> self._observers:
+            obs.update(price)</pre>
+            <div class="ba-note">See the full <code>attach()</code> / <code>Observer</code> mechanics below.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diagram-frame">
+        <svg viewBox="0 0 600 210" role="img" aria-labelledby="observer-svg-title">
+          <title id="observer-svg-title">UML: Subject interface with attach/notify, ConcreteSubject implements it and holds Observer list; Observer interface implemented by two concrete observers</title>
+          <g font-family="var(--mono)" font-size="12" fill="var(--ink)">
+            <rect x="20" y="70" width="160" height="60" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 2"/>
+            <text x="100" y="88" text-anchor="middle" font-style="italic" font-size="10">&laquo;interface&raquo;</text>
+            <text x="100" y="104" text-anchor="middle" font-weight="700">Subject</text>
+            <line x1="20" y1="112" x2="180" y2="112" stroke="var(--rule)"/>
+            <text x="30" y="124" font-size="9.5">+attach/notify()</text>
+
+            <rect x="240" y="70" width="120" height="46" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="300" y="90" text-anchor="middle" font-weight="700" font-size="10">StockTicker</text>
+            <text x="300" y="104" text-anchor="middle" font-size="9" fill="var(--ink-soft)">(Concrete Subject)</text>
+
+            <rect x="430" y="10" width="150" height="46" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 2"/>
+            <text x="505" y="28" text-anchor="middle" font-style="italic" font-size="10">&laquo;interface&raquo;</text>
+            <text x="505" y="44" text-anchor="middle" font-weight="700">Observer</text>
+
+            <rect x="430" y="150" width="150" height="44" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="505" y="176" text-anchor="middle" font-weight="700" font-size="10.5">PriceDisplay</text>
+
+            <line x1="180" y1="100" x2="240" y2="93" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+            <line x1="360" y1="85" x2="430" y2="45" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-open)"/>
+            <text x="368" y="70" font-size="9">notifies *</text>
+            <line x1="505" y1="150" x2="505" y2="56" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+          </g>
+        </svg>
+        <div class="diagram-cap">StockTicker holds many Observers and pushes updates to all of them on price change.</div>
+      </div>
+
+      <div class="codeblock" data-block="observer">
+        <div class="tabbar">
+          <button class="tabbtn active" data-lang="python">Python</button>
+          <button class="tabbtn" data-lang="java">Java</button>
+          <button class="tabbtn" data-lang="csharp">C#</button>
+          <button class="tabbtn" data-lang="react">React</button>
+        </div>
+        <div class="tabpanel active" data-lang="python"><pre><span class="kw">class</span> Observer(ABC):
+    <span class="kw">@abstractmethod</span>
+    <span class="kw">def</span> update(self, price: float): ...
+
+<span class="kw">class</span> StockTicker:
+    <span class="kw">def</span> __init__(self):
+        self._observers: list[Observer] = []
+
+    <span class="kw">def</span> attach(self, observer: Observer):
+        self._observers.append(observer)
+
+    <span class="kw">def</span> set_price(self, price: float):
+        self._price = price
+        <span class="kw">for</span> obs <span class="kw">in</span> self._observers:
+            obs.update(price)  <span class="cm"># push to every subscriber</span>
+
+<span class="kw">class</span> PriceDisplay(Observer):
+    <span class="kw">def</span> update(self, price):
+        print(<span class="str">f"Price is now ${price}"</span>)
+
+ticker = StockTicker()
+ticker.attach(PriceDisplay())
+ticker.set_price(182.50)</pre></div>
+        <div class="tabpanel" data-lang="java"><pre><span class="kw">public interface</span> Observer {
+    <span class="kw">void</span> update(<span class="kw">double</span> price);
+}
+
+<span class="kw">public class</span> StockTicker {
+    <span class="kw">private final</span> List&lt;Observer&gt; observers = <span class="kw">new</span> ArrayList&lt;&gt;();
+
+    <span class="kw">public void</span> attach(Observer o) { observers.add(o); }
+
+    <span class="kw">public void</span> setPrice(<span class="kw">double</span> price) {
+        <span class="kw">for</span> (Observer o : observers) o.update(price); <span class="cm">// push to every subscriber</span>
+    }
+}
+
+<span class="kw">public class</span> PriceDisplay <span class="kw">implements</span> Observer {
+    <span class="kw">public void</span> update(<span class="kw">double</span> price) { System.out.println(<span class="str">"Price is now $"</span> + price); }
+}
+
+StockTicker ticker = <span class="kw">new</span> StockTicker();
+ticker.attach(<span class="kw">new</span> PriceDisplay());
+ticker.setPrice(182.50);</pre></div>
+        <div class="tabpanel" data-lang="csharp"><pre><span class="cm">// C# idiomatic Observer: built-in event + delegate</span>
+<span class="kw">public class</span> StockTicker
+{
+    <span class="kw">public event</span> Action&lt;<span class="kw">double</span>&gt; PriceChanged; <span class="cm">// the "Subject" interface, built in</span>
+
+    <span class="kw">public void</span> SetPrice(<span class="kw">double</span> price) =&gt;
+        PriceChanged?.Invoke(price); <span class="cm">// push to every subscriber</span>
+}
+
+<span class="kw">var</span> ticker = <span class="kw">new</span> StockTicker();
+ticker.PriceChanged += price =&gt; Console.WriteLine($<span class="str">"Price is now ${price}"</span>);
+ticker.SetPrice(182.50);</pre></div>
+        <div class="tabpanel" data-lang="react"><pre><span class="cm">// Observer is React's native data flow: state changes in a</span>
+<span class="cm">// provider, every subscribed component re-renders automatically.</span>
+
+<span class="kw">const</span> PriceContext = createContext(<span class="kw">null</span>);
+
+<span class="kw">function</span> StockTickerProvider({ children }) {
+  <span class="kw">const</span> [price, setPrice] = useState(180.00); <span class="cm">// the Subject's state</span>
+  <span class="kw">return</span> (
+    &lt;PriceContext.Provider value={{ price, setPrice }}&gt;
+      {children} <span class="cm">// every consumer below is an Observer</span>
+    &lt;/PriceContext.Provider&gt;
+  );
+}
+
+<span class="kw">function</span> PriceDisplay() {
+  <span class="kw">const</span> { price } = useContext(PriceContext); <span class="cm">// auto re-renders on change</span>
+  <span class="kw">return</span> &lt;p&gt;Price is now ${price}&lt;/p&gt;;
+}</pre></div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- FACTORY -->
+    <!-- ============================================================ -->
+    <section class="block wide" id="factory">
+      <h2 class="h"><span class="num">09 / Creational</span>Factory Pattern</h2>
+      <div class="meta-row">
+        <span class="pill">Creational</span>
+        <span class="pill">Delegates object creation</span>
+      </div>
+      <p class="lede" style="max-width: var(--measure)">Defines an interface for creating an object, letting subclasses (or a single method) decide which concrete class to instantiate. Interview staple: <strong>shape/notification factories</strong> where the caller asks for a <code>type</code> string and gets back the right class.</p>
+
+      <div class="ba-wrap">
+        <div class="ba-grid">
+          <div class="ba-col before">
+            <div class="ba-head"><span class="dot"></span>Before &mdash; no pattern</div>
+            <pre><span class="cm"># Every call site that sends a notification repeats</span>
+<span class="cm"># the same "which class do I construct?" branching.</span>
+<span class="kw">if</span> kind == <span class="str">"email"</span>:
+    n = EmailNotification()
+<span class="kw">elif</span> kind == <span class="str">"sms"</span>:
+    n = SmsNotification()
+n.send(<span class="str">"Order shipped"</span>)
+<span class="cm"># ...and this exact branching is copy-pasted at</span>
+<span class="cm"># every other call site that also sends notifications</span></pre>
+            <div class="ba-note">The construction logic is duplicated everywhere a notification gets created.</div>
+          </div>
+          <div class="ba-col after">
+            <div class="ba-head"><span class="dot"></span>After &mdash; Factory</div>
+            <pre><span class="cm"># Construction logic lives in exactly one place.</span>
+<span class="cm"># Call sites just ask for what they want.</span>
+NotificationFactory.create(<span class="str">"sms"</span>).send(<span class="str">"Order shipped"</span>)
+
+<span class="cm"># A new kind is one new branch, in one place —</span>
+<span class="cm"># every call site stays untouched.</span></pre>
+            <div class="ba-note">See the full <code>NotificationFactory</code> below.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diagram-frame">
+        <svg viewBox="0 0 560 210" role="img" aria-labelledby="factory-svg-title">
+          <title id="factory-svg-title">UML: NotificationFactory creates Notification objects; EmailNotification and SmsNotification implement Notification</title>
+          <g font-family="var(--mono)" font-size="12" fill="var(--ink)">
+            <rect x="20" y="80" width="170" height="50" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="105" y="108" text-anchor="middle" font-weight="700" font-size="11">NotificationFactory</text>
+
+            <rect x="240" y="80" width="150" height="46" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 2"/>
+            <text x="315" y="98" text-anchor="middle" font-style="italic" font-size="10">&laquo;interface&raquo;</text>
+            <text x="315" y="114" text-anchor="middle" font-weight="700">Notification</text>
+
+            <rect x="440" y="16" width="120" height="44" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="500" y="43" text-anchor="middle" font-weight="700" font-size="10.5">EmailNotif.</text>
+
+            <rect x="440" y="150" width="120" height="44" rx="3" fill="none" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="500" y="177" text-anchor="middle" font-weight="700" font-size="11">SmsNotif.</text>
+
+            <line x1="190" y1="103" x2="240" y2="103" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-open)"/>
+            <text x="196" y="96" font-size="9">creates</text>
+            <line x1="470" y1="60" x2="360" y2="90" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+            <line x1="470" y1="150" x2="360" y2="120" stroke="var(--ink-soft)" stroke-width="1.2" marker-end="url(#arrow-hollow)"/>
+          </g>
+        </svg>
+        <div class="diagram-cap">Caller asks the factory for a Notification by type; the factory alone knows which concrete class to build.</div>
+      </div>
+
+      <div class="codeblock" data-block="factory">
+        <div class="tabbar">
+          <button class="tabbtn active" data-lang="python">Python</button>
+          <button class="tabbtn" data-lang="java">Java</button>
+          <button class="tabbtn" data-lang="csharp">C#</button>
+          <button class="tabbtn" data-lang="react">React</button>
+        </div>
+        <div class="tabpanel active" data-lang="python"><pre><span class="kw">class</span> Notification(ABC):
+    <span class="kw">@abstractmethod</span>
+    <span class="kw">def</span> send(self, message: str): ...
+
+<span class="kw">class</span> EmailNotification(Notification):
+    <span class="kw">def</span> send(self, message): print(<span class="str">f"Email: {message}"</span>)
+
+<span class="kw">class</span> SmsNotification(Notification):
+    <span class="kw">def</span> send(self, message): print(<span class="str">f"SMS: {message}"</span>)
+
+<span class="kw">class</span> NotificationFactory:
+    <span class="kw">@staticmethod</span>
+    <span class="kw">def</span> create(kind: str) -&gt; Notification:
+        <span class="kw">if</span> kind == <span class="str">"email"</span>: <span class="kw">return</span> EmailNotification()
+        <span class="kw">if</span> kind == <span class="str">"sms"</span>:   <span class="kw">return</span> SmsNotification()
+        <span class="kw">raise</span> ValueError(<span class="str">f"Unknown kind: {kind}"</span>)
+
+<span class="cm"># Caller never calls a constructor directly</span>
+NotificationFactory.create(<span class="str">"sms"</span>).send(<span class="str">"Order shipped"</span>)</pre></div>
+        <div class="tabpanel" data-lang="java"><pre><span class="kw">public interface</span> Notification {
+    <span class="kw">void</span> send(String message);
+}
+
+<span class="kw">public class</span> EmailNotification <span class="kw">implements</span> Notification {
+    <span class="kw">public void</span> send(String m) { System.out.println(<span class="str">"Email: "</span> + m); }
+}
+
+<span class="kw">public class</span> SmsNotification <span class="kw">implements</span> Notification {
+    <span class="kw">public void</span> send(String m) { System.out.println(<span class="str">"SMS: "</span> + m); }
+}
+
+<span class="kw">public class</span> NotificationFactory {
+    <span class="kw">public static</span> Notification create(String kind) {
+        <span class="kw">return switch</span> (kind) {
+            <span class="kw">case</span> <span class="str">"email"</span> -&gt; <span class="kw">new</span> EmailNotification();
+            <span class="kw">case</span> <span class="str">"sms"</span>   -&gt; <span class="kw">new</span> SmsNotification();
+            <span class="kw">default</span> -&gt; <span class="kw">throw new</span> IllegalArgumentException(kind);
+        };
+    }
+}
+
+<span class="cm">// Caller never calls a constructor directly</span>
+NotificationFactory.create(<span class="str">"sms"</span>).send(<span class="str">"Order shipped"</span>);</pre></div>
+        <div class="tabpanel" data-lang="csharp"><pre><span class="kw">public interface</span> INotification
+{
+    <span class="kw">void</span> Send(<span class="kw">string</span> message);
+}
+
+<span class="kw">public class</span> EmailNotification : INotification
+{
+    <span class="kw">public void</span> Send(<span class="kw">string</span> m) =&gt; Console.WriteLine($<span class="str">"Email: {m}"</span>);
+}
+
+<span class="kw">public class</span> SmsNotification : INotification
+{
+    <span class="kw">public void</span> Send(<span class="kw">string</span> m) =&gt; Console.WriteLine($<span class="str">"SMS: {m}"</span>);
+}
+
+<span class="kw">public static class</span> NotificationFactory
+{
+    <span class="kw">public static</span> INotification Create(<span class="kw">string</span> kind) =&gt; kind <span class="kw">switch</span>
+    {
+        <span class="str">"email"</span> =&gt; <span class="kw">new</span> EmailNotification(),
+        <span class="str">"sms"</span>   =&gt; <span class="kw">new</span> SmsNotification(),
+        _         =&gt; <span class="kw">throw new</span> ArgumentException(kind)
+    };
+}
+
+<span class="cm">// Caller never calls a constructor directly</span>
+NotificationFactory.Create(<span class="str">"sms"</span>).Send(<span class="str">"Order shipped"</span>);</pre></div>
+        <div class="tabpanel" data-lang="react"><pre><span class="cm">// Factory as a component-selector function — very common for</span>
+<span class="cm">// rendering polymorphic content (form fields, notification toasts).</span>
+
+<span class="kw">const</span> registry = {
+  email: EmailNotification,
+  sms: SmsNotification,
+};
+
+<span class="kw">function</span> NotificationFactory({ kind, ...props }) {
+  <span class="kw">const</span> Component = registry[kind];
+  <span class="kw">if</span> (!Component) <span class="kw">throw new</span> Error(<span class="str">`Unknown kind: ${kind}`</span>);
+  <span class="kw">return</span> &lt;Component {...props} /&gt;; <span class="cm">// caller never imports EmailNotification directly</span>
+}
+
+&lt;NotificationFactory kind=<span class="str">"sms"</span> message=<span class="str">"Order shipped"</span> /&gt;</pre></div>
+      </div>
+    </section>
+
+    <footer>
+      Object Design Field Guide &mdash; code samples are teaching excerpts, not production-hardened implementations. Verify against your language's current standard library before shipping.
+    </footer>
+  </main>
+</div>
+
+<script>
+document.querySelectorAll('.codeblock').forEach(function (block) {
+  var buttons = block.querySelectorAll('.tabbtn');
+  var panels = block.querySelectorAll('.tabpanel');
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var lang = btn.getAttribute('data-lang');
+      buttons.forEach(function (b) { b.classList.toggle('active', b === btn); });
+      panels.forEach(function (p) {
+        p.classList.toggle('active', p.getAttribute('data-lang') === lang);
+      });
+    });
+  });
+});
+</script>
+</body>
+</html>

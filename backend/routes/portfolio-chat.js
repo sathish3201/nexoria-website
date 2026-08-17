@@ -1,5 +1,18 @@
 import { Router } from "express";
-import { PORTFOLIO_DATA } from "../data/portfolioData.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Reads the same portfolio-site.json served by GET /api/data and used
+// to generate the resume PDF — one source of truth instead of a
+// separate mirrored copy that could drift out of sync.
+function readPortfolioData() {
+  return JSON.parse(
+    fs.readFileSync(path.join(__dirname, "..", "data", "portfolio-site.json"), "utf-8")
+  );
+}
 
 // Same lesson learned building the Nexoria chat route: a small local
 // model (Gemma 3 1B, quantized) falls apart on a long, dense system
@@ -37,8 +50,7 @@ function scoreText(text, keywords) {
   return score;
 }
 
-function buildKnowledgeSummary(userMessage) {
-  const d = PORTFOLIO_DATA;
+function buildKnowledgeSummary(d, userMessage) {
   const keywords = extractKeywords(userMessage);
 
   const scoredProjects = d.projects
@@ -50,7 +62,8 @@ function buildKnowledgeSummary(userMessage) {
   const scoredFaq = d.faq
     .map((f) => ({ item: f, score: scoreText(`${f.question} ${f.answer}`, keywords) }))
     .sort((a, b) => b.score - a.score);
-  const expScore = scoreText(`${d.experience[0].role} ${d.experience[0].company} ${d.experience[0].summary}`, keywords);
+  const expSummary = d.experience[0].achievements.join(" ");
+  const expScore = scoreText(`${d.experience[0].role} ${d.experience[0].company} ${expSummary}`, keywords);
   const certScore = Math.max(
     0,
     ...d.certifications.map((c) => scoreText(`${c.name} ${c.issuer || ""}`, keywords))
@@ -78,7 +91,7 @@ function buildKnowledgeSummary(userMessage) {
   // touches them does it matter, and skipping them entirely on a miss
   // would make the assistant unable to answer "where did you study" etc.
   const experienceText = expScore > 0 || true
-    ? `- ${d.experience[0].role} at ${d.experience[0].company} (${d.experience[0].period}): ${d.experience[0].summary}`
+    ? `- ${d.experience[0].role} at ${d.experience[0].company} (${d.experience[0].period}): ${expSummary}`
     : "";
 
   const educationText = eduScore > 0
@@ -89,8 +102,8 @@ function buildKnowledgeSummary(userMessage) {
     ? d.certifications.map((c) => `- ${c.name}${c.issuer ? ` (${c.issuer})` : ""}, ${c.year}`).join("\n")
     : `- ${d.certifications.length} certifications — ask for specifics.`;
 
-  return `SUMMARY: ${d.summary}
-CONTACT: ${d.meta.email} | GitHub: ${d.meta.github} | LinkedIn: ${d.meta.linkedin} | Location: ${d.meta.location}
+  return `SUMMARY: ${d.hero.summary}
+CONTACT: ${d.meta.email} | GitHub: ${d.meta.social.github} | LinkedIn: ${d.meta.social.linkedin} | Location: ${d.meta.location}
 
 EXPERIENCE:
 ${experienceText}
@@ -111,10 +124,10 @@ FREQUENTLY ASKED QUESTIONS:
 ${faqText}`;
 }
 
-function buildSystemPrompt(userMessage) {
-  return `You are the chat assistant on ${PORTFOLIO_DATA.meta.name}'s portfolio website. Answer visitor questions using ONLY the information below. Be concise (2-4 sentences unless more detail is clearly needed). Refer to him in the third person. If a question isn't covered by this information, say you don't have that specific detail and point the visitor to his email or LinkedIn. Never invent experience, skills, or projects that aren't listed here.
+function buildSystemPrompt(d, userMessage) {
+  return `You are the chat assistant on ${d.meta.name}'s portfolio website. Answer visitor questions using ONLY the information below. Be concise (2-4 sentences unless more detail is clearly needed). Refer to him in the third person. If a question isn't covered by this information, say you don't have that specific detail and point the visitor to his email or LinkedIn. Never invent experience, skills, or projects that aren't listed here.
 
-${buildKnowledgeSummary(userMessage)}`;
+${buildKnowledgeSummary(d, userMessage)}`;
 }
 
 const UNCONFIGURED_ANSWER =
@@ -142,7 +155,13 @@ router.post("/", async (req, res) => {
     return res.status(200).json({ reply: UNCONFIGURED_ANSWER });
   }
 
-  const systemPrompt = buildSystemPrompt(trimmedMessage);
+  let systemPrompt;
+  try {
+    systemPrompt = buildSystemPrompt(readPortfolioData(), trimmedMessage);
+  } catch (err) {
+    console.error("Failed to load portfolio content:", err.message);
+    return res.status(500).json({ error: "Could not load portfolio content." });
+  }
 
   // The frontend's canned greeting bubble must never be forwarded as if
   // it were a real conversation turn — Gemma's chat template requires
