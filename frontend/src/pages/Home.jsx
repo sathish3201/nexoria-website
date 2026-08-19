@@ -1,5 +1,11 @@
+import { lazy } from "react";
 import { Link } from "react-router-dom";
 import { fallbackServices } from "../data/fallback.js";
+import Scene3D from "../components/Scene3D.jsx";
+import Reveal from "../components/Reveal.jsx";
+import TiltCard from "../components/TiltCard.jsx";
+
+const HeroNetworkScene = lazy(() => import("../components/3d/HeroNetworkScene.jsx"));
 
 const STATS = [
   { num: "6", label: "Core service lines" },
@@ -12,6 +18,7 @@ export default function Home() {
   return (
     <>
       <section className="hero">
+        <Scene3D scene={HeroNetworkScene} className="hero-3d-layer" fallback={null} threshold={0.1} />
         <div className="hero-inner">
           <div>
             <span className="eyebrow">Full-Stack · App · Data Engineering</span>
@@ -75,15 +82,19 @@ export default function Home() {
           </div>
 
           <div className="grid grid-3">
-            {fallbackServices.map((s) => (
-              <div className="card" key={s.id}>
-                <div className="card-icon">{s.title.charAt(0)}</div>
-                <h3>{s.title}</h3>
-                <p>{s.summary}</p>
-                <Link to="/services" className="card-link">
-                  Learn more →
-                </Link>
-              </div>
+            {fallbackServices.map((s, i) => (
+              <Reveal key={s.id} direction={i % 2 === 0 ? "left" : "right"} delay={(i % 3) * 80}>
+                <TiltCard>
+                  <div className="card">
+                    <div className="card-icon">{s.title.charAt(0)}</div>
+                    <h3>{s.title}</h3>
+                    <p>{s.summary}</p>
+                    <Link to="/services" className="card-link">
+                      Learn more →
+                    </Link>
+                  </div>
+                </TiltCard>
+              </Reveal>
             ))}
           </div>
         </div>

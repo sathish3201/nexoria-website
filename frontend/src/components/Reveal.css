@@ -1,0 +1,41 @@
+/* Reveal: one-shot scroll-in fade/slide wrapper.
+   direction="up"    — fade + rise (default)
+   direction="left"  — 3D perspective rotateY slide-in from the left,
+                        converging to flat as it settles
+   direction="right" — mirror of left
+*/
+
+.reveal {
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  will-change: opacity, transform;
+}
+
+.reveal-up-hidden {
+  opacity: 0;
+  transform: translateY(32px);
+}
+
+.reveal-up-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-left-hidden {
+  opacity: 0;
+  transform: perspective(1000px) translateX(-64px) rotateY(-25deg);
+}
+
+.reveal-left-visible {
+  opacity: 1;
+  transform: perspective(1000px) translateX(0) rotateY(0deg);
+}
+
+.reveal-right-hidden {
+  opacity: 0;
+  transform: perspective(1000px) translateX(64px) rotateY(25deg);
+}
+
+.reveal-right-visible {
+  opacity: 1;
+  transform: perspective(1000px) translateX(0) rotateY(0deg);
+}

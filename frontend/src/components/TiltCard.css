@@ -1,0 +1,15 @@
+/* TiltCard: pointer-tilt + lift + cursor-tracking spotlight wrapper.
+   Scoped styles only — reuses the design tokens from src/index.css
+   (no new colors introduced). */
+
+.tilt-card {
+  position: relative;
+  will-change: transform;
+}
+
+.tilt-card-spotlight {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}

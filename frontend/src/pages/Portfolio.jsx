@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api.js";
 import { fallbackPortfolio } from "../data/fallback.js";
+import Reveal from "../components/Reveal.jsx";
+import TiltCard from "../components/TiltCard.jsx";
 
 export default function Portfolio() {
   const [items, setItems] = useState(fallbackPortfolio);
@@ -31,20 +33,24 @@ export default function Portfolio() {
         <div className="container">
           {loading && <p className="loading-text">Loading portfolio…</p>}
           <div className="grid grid-3">
-            {items.map((p) => (
-              <div className="card" key={p.id}>
-                <span className="eyebrow">{p.category}</span>
-                <h3>{p.title}</h3>
-                <p>{p.description}</p>
-                <div className="tag-list">
-                  {(p.tags || []).map((t) => (
-                    <span className="tag" key={t}>
-                      {t}
-                    </span>
-                  ))}
-                </div>
-                {p.status && <div className="status-note">{p.status}</div>}
-              </div>
+            {items.map((p, i) => (
+              <Reveal key={p.id} direction={i % 2 === 0 ? "left" : "right"} delay={(i % 3) * 80}>
+                <TiltCard>
+                  <div className="card">
+                    <span className="eyebrow">{p.category}</span>
+                    <h3>{p.title}</h3>
+                    <p>{p.description}</p>
+                    <div className="tag-list">
+                      {(p.tags || []).map((t) => (
+                        <span className="tag" key={t}>
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                    {p.status && <div className="status-note">{p.status}</div>}
+                  </div>
+                </TiltCard>
+              </Reveal>
             ))}
           </div>
         </div>
