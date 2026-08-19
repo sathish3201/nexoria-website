@@ -1,8 +1,8 @@
 {
   "meta": {
     "name": "Sathish Chakali",
-    "role": "Full Stack Developer",
-    "tagline": "React, JavaScript & REST APIs on the frontend — PL/SQL, Node.js & MongoDB on the backend.",
+    "role": "AI/ML Engineer",
+    "tagline": "Building agentic systems — RAG, tool-calling via MCP, and fine-tuned LLMs — backed by production-grade API and data engineering discipline.",
     "phone": "+91 6301343762",
     "email": "sathishchakali1023@gmail.com",
     "location": "Hyderabad, India",
@@ -16,25 +16,25 @@
   "hero": {
     "greeting": "Hi, my name is",
     "roles": [
-      "React Developer",
-      "Node.js & REST API Developer",
-      "Full Stack Engineer",
-      "AI-Assisted Automation Builder"
+      "AI/ML Engineer",
+      "Agent & RAG Systems Builder",
+      "LLM Tool-Calling (MCP) Developer",
+      "Full-Stack API Engineer"
     ],
-    "summary": "I build and deploy complete full-stack projects — React on the frontend, Node.js and REST APIs on the backend — and bring the same production discipline from my Oracle PL/SQL work at Accenture into every app I ship, end-to-end."
+    "summary": "I design and ship agentic AI systems end-to-end — retrieval-augmented generation, tool-calling via MCP, and NL-to-SQL pipelines with guardrails — and bring the same production discipline from my Oracle PL/SQL work at Accenture into every model-backed app I deploy."
   },
 
   "about": {
     "paragraphs": [
-      "I'm a full stack developer with 1.6+ years of experience at Accenture and a track record of independently building and deploying complete projects — React on the frontend, and Node.js, REST APIs, and MongoDB on the backend. I've shipped a full MERN-stack SaaS mock interview platform with JWT authentication and live LLM-based grading, alongside an Oracle ETL data warehouse pipeline, a documented SQL performance tuning case study, and an n8n + LLM incident-triage automation.",
-      "In my day-to-day role at Accenture, I work on Oracle-based data warehouse systems in a production ETL environment — building PL/SQL packages, tuning SQL performance, and resolving data-load failures within SLA as part of a cross-functional support team. That production discipline around debugging, exception handling, and reliability carries directly into how I build and deploy my own full-stack projects.",
-      "I'm a fast learner of new tools and platforms, comfortable taking a project from local development to a live, publicly accessible deployment end-to-end. I'm currently extending my backend experience into Node.js REST APIs and building AI-assisted automation skills using n8n and Claude/LLM integration."
+      "I'm an AI/ML engineer building agentic systems — from a fully local pipeline that turns natural language into validated SQL, retrieves answers via RAG over a vector database, and exposes it all as callable tools through an MCP server, to LLM-graded applications and n8n-based automation. Alongside this, I have 1.6+ years of production engineering experience at Accenture, working on Oracle-based data warehouse systems.",
+      "My flagship project, Local Agent Pipeline, combines natural-language-to-SQL generation (validated by a read-only SqlGuard before execution), semantic search over thousands of transcript chunks via ChromaDB, an MCP server that exposes these capabilities as tools any agent can call, and a two-tier memory + SQLite cache — built with FastAPI and deployed on Render. It's the clearest expression of how I think about AI engineering: retrieval and generation are only half the system — validation, caching, and tool interfaces are what make it production-ready.",
+      "In my day-to-day role at Accenture, I work on Oracle-based data warehouse systems in a production ETL environment — building PL/SQL packages, tuning SQL performance, and resolving data-load failures within SLA. That same discipline around validation, exception handling, and reliability is what I apply to LLM pipelines: guardrails around generated SQL, structured retrieval instead of raw prompt stuffing, and caching layers that make agentic systems fast enough to actually use."
     ],
     "focusAreas": [
-      "Full-stack React & Node.js development",
-      "REST API design & integration",
-      "Oracle PL/SQL & SQL performance tuning",
-      "AI-assisted workflow automation"
+      "Agentic AI systems — RAG, tool-calling, MCP servers",
+      "NL-to-SQL generation with validation guardrails",
+      "LLM API integration & fine-tuning",
+      "Production API design (FastAPI, Node.js, REST)"
     ],
     "stats": [
       { "label": "Years Experience", "value": "1.6+" },
@@ -44,14 +44,14 @@
     ]
   },
 
-  "resumeSummary": "Full stack developer with 1.6+ years of experience at Accenture, building production Oracle PL/SQL systems by day and independently shipping complete full-stack projects on the side — React on the frontend, and Node.js/Express, REST APIs, and MongoDB on the backend. Has built and deployed a full MERN-stack SaaS mock interview platform with JWT authentication and live LLM-based grading (Groq/Llama), a full-stack business marketing site with a working contact form and built-in FAQ chatbot, an e-commerce storefront demo with Razorpay test-mode checkout and server-side payment verification, an Oracle ETL data warehouse pipeline with production-style exception handling, a documented SQL performance tuning case study, and an n8n + LLM incident-triage automation — all version-controlled on GitHub, several with live public deployments on Render. Comfortable with Git-based workflows, debugging, and deployment end-to-end, from local development to publicly accessible URLs. Currently extending backend experience into Node.js REST APIs and AI-assisted workflow automation (n8n, Claude/LLM integration). Java Full Stack Certified (Wipro TalentNext); eager to learn, curious, and looking to grow with a collaborative team.",
+  "resumeSummary": "AI/ML engineer with 1.6+ years of production engineering experience at Accenture, building agentic AI systems end-to-end alongside production Oracle PL/SQL work. Built and deployed Local Agent Pipeline — a fully local agentic system combining NL-to-SQL generation validated by a read-only SqlGuard, semantic search over 5,500+ transcript chunks via ChromaDB (RAG), an MCP server exposing tools for agent use, and a two-tier memory + SQLite cache, built with FastAPI and deployed via Docker on Render. Also shipped a full MERN-stack SaaS mock interview platform with JWT authentication and live LLM-based grading (Groq/Llama), an Oracle ETL data warehouse pipeline with production-style exception handling, a documented SQL performance tuning case study, and an n8n + LLM incident-triage automation — all version-controlled on GitHub, several with live public deployments on Render. Comfortable taking AI-backed systems from local development to publicly accessible, production deployments end-to-end. Java Full Stack Certified (Wipro TalentNext), AI/ML Virtual Internship Certified; eager to grow with a team building applied AI systems.",
 
   "resumeSkillGroups": [
+    { "label": "AI & Agentic Systems", "items": "RAG (ChromaDB), MCP (Model Context Protocol), NL-to-SQL Generation, LLM API Integration (Groq/Llama, Claude), Fine-Tuning, Structured Prompting" },
+    { "label": "Backend & APIs", "items": "FastAPI, Node.js & Express, RESTful API Development, Oracle PL/SQL & APEX, Python, Java" },
+    { "label": "Data & Databases", "items": "SQLite, MongoDB (NoSQL), MySQL, PostgreSQL, Oracle SQL, Vector Search" },
     { "label": "Frontend", "items": "HTML, CSS, JavaScript, React (UI Development), Tailwind CSS" },
-    { "label": "Backend", "items": "Node.js & Express, Oracle PL/SQL & APEX, Java, Python, Django (REST Framework)" },
-    { "label": "APIs & Databases", "items": "RESTful API Development, MongoDB (NoSQL), MySQL, PostgreSQL, Oracle SQL" },
-    { "label": "AI & Automation", "items": "LLM API Integration (Groq/Llama, Claude), n8n Workflow Automation, Structured Prompting" },
-    { "label": "Version Control & Deployment", "items": "Git/GitHub, CI/CD Pipelines (GitHub Actions), Render, GitHub Pages, MongoDB Atlas" },
+    { "label": "Deployment & DevOps", "items": "Docker, Git/GitHub, CI/CD Pipelines (GitHub Actions), Render, GitHub Pages, MongoDB Atlas" },
     { "label": "Debugging & Testing", "items": "Root-Cause Analysis, SQL Performance Tuning (Optimizer Hints, DBMS_STATS, EXPLAIN PLAN)" },
     { "label": "Collaboration", "items": "Agile/Hybrid Team Collaboration, Clear Written & Verbal Communication" }
   ],
@@ -127,7 +127,7 @@
       "image": "gradient-4"
     },
     {
-      "title": "Nexoria Technologies — Business Website",
+      "title": "EKADHANTHA — Business Website",
       "description": "A full-stack marketing website for an IT services business, with a React frontend and Node/Express backend serving services, pricing, and portfolio content, a working contact form with email notifications, and a lightweight built-in FAQ chatbot.",
       "resumeDescription": "Full-stack marketing website for an IT services business: React frontend with a Node/Express backend serving services, pricing, and portfolio content, a working contact form with email notifications, and a lightweight built-in FAQ chatbot",
       "tech": ["React", "Node.js", "Express", "Vite"],
@@ -155,6 +155,17 @@
   ],
 
   "skills": [
+    {
+      "category": "Agentic AI & LLMs",
+      "icon": "layout-panel-left",
+      "items": [
+        "RAG (ChromaDB, Vector Search)",
+        "MCP (Model Context Protocol) Tool Servers",
+        "NL-to-SQL Generation & Guardrails",
+        "LLM API Integration (Groq/Llama, Claude)",
+        "Fine-Tuning & Structured Prompting"
+      ]
+    },
     {
       "category": "PL/SQL & Database",
       "icon": "server",
@@ -186,13 +197,9 @@
         "PuTTY",
         "WinSCP",
         "Unix/Linux",
+        "Docker",
         "Incident & Ticket Management"
       ]
-    },
-    {
-      "category": "Emerging Skills",
-      "icon": "layout-panel-left",
-      "items": ["AI-Assisted Workflow Automation", "n8n", "Claude/LLM Integration", "Agile/Hybrid Collaboration"]
     }
   ],
 
