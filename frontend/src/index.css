@@ -823,6 +823,10 @@ main {
   overflow: hidden;
 }
 
+.chat-panel-dragging {
+  cursor: grabbing;
+}
+
 .chat-header {
   background: var(--navy);
   color: #fff;
@@ -831,6 +835,14 @@ main {
   align-items: center;
   justify-content: space-between;
   font-weight: 700;
+}
+
+.chat-header-draggable {
+  cursor: grab;
+}
+
+.chat-header-dragging {
+  cursor: grabbing;
 }
 
 .chat-close {
@@ -851,6 +863,44 @@ main {
   gap: 10px;
 }
 
+.chat-message-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 100%;
+}
+
+.chat-message-row-user {
+  flex-direction: row-reverse;
+  align-self: flex-end;
+}
+
+.chat-message-row-assistant {
+  align-self: flex-start;
+}
+
+.chat-avatar-orb {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.chat-avatar-dot {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+}
+
+.chat-avatar-dot-user {
+  background: rgba(29, 95, 224, 0.6);
+}
+
+.chat-avatar-dot-assistant {
+  background: rgba(91, 157, 255, 0.6);
+}
+
 .chat-bubble {
   padding: 10px 14px;
   border-radius: 10px;
@@ -863,13 +913,11 @@ main {
   background: var(--bg);
   border: 1px solid var(--border);
   color: var(--text);
-  align-self: flex-start;
 }
 
 .chat-bubble-user {
   background: var(--blue);
   color: #fff;
-  align-self: flex-end;
 }
 
 .chat-bubble-error {

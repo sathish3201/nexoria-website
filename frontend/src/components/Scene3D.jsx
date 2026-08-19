@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import usePrefersReducedMotion from "../hooks/usePrefersReducedMotion.js";
-import useInViewOnce from "../hooks/useInViewOnce.js";
+import useInView from "../hooks/useInView.js";
 
 /**
  * Gates a lazy-loaded @react-three/fiber scene behind two conditions: the
@@ -11,6 +11,15 @@ import useInViewOnce from "../hooks/useInViewOnce.js";
  * static (non-animating) Canvas would still pay the full WebGL + bundle
  * cost for zero benefit to a reduced-motion visitor, so we skip it
  * entirely rather than mounting a frozen scene.
+ *
+ * Visibility (via useInView, not useInViewOnce) is tracked continuously,
+ * not just on first entry — each Canvas is its own WebGL context, and
+ * browsers cap how many can be alive at once (~16 in Chrome). A page with
+ * several 3D sections that each mounted "once visited, forever alive"
+ * can exceed that cap on a full scroll-through, causing "WebGLRenderer:
+ * Context Lost" crashes once the browser force-evicts older contexts.
+ * Unmounting scenes once they scroll meaningfully offscreen keeps only
+ * the currently-visible ones alive.
  *
  * `scene` is a component reference from React.lazy(() => import(...)),
  * constructed by the caller so each 3D scene stays in its own code-split
@@ -25,7 +34,7 @@ export default function Scene3D({
   ...sceneProps
 }) {
   const prefersReducedMotion = usePrefersReducedMotion();
-  const [ref, inView] = useInViewOnce(threshold);
+  const [ref, inView] = useInView(threshold);
 
   const showScene = !prefersReducedMotion && inView;
 

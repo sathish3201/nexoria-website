@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
+import StatusBadge from "./StatusBadge.jsx";
 
 const LINKS = [
   { to: "/", label: "Home" },
@@ -35,6 +36,7 @@ export default function Navbar() {
         </nav>
 
         <div className="nav-cta">
+          <StatusBadge />
           <NavLink to="/contact" className="btn btn-primary">
             Get a Quote
           </NavLink>

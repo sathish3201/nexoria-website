@@ -1,0 +1,80 @@
+/* StatusBadge: navbar API/Model connection status dots.
+   Scoped styles only — reuses design tokens from src/index.css. */
+
+.status-badge {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+@media (min-width: 980px) {
+  .status-badge {
+    display: flex;
+  }
+}
+
+.status-badge-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-badge-divider {
+  width: 1px;
+  height: 12px;
+  background: var(--border);
+}
+
+.status-dot-wrap {
+  position: relative;
+  display: inline-flex;
+  height: 8px;
+  width: 8px;
+}
+
+.status-dot {
+  position: relative;
+  display: inline-flex;
+  height: 8px;
+  width: 8px;
+  border-radius: 999px;
+  background: #94a3b8;
+}
+
+.status-dot-online .status-dot {
+  background: var(--success);
+}
+
+.status-dot-offline .status-dot {
+  background: #d64545;
+}
+
+.status-dot-ping {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  height: 100%;
+  width: 100%;
+  border-radius: 999px;
+  background: var(--success);
+  opacity: 0.6;
+  animation: status-ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes status-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  75%,
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
