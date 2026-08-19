@@ -45,14 +45,14 @@ router.get("/resume", (req, res) => {
 // Lets the portfolio site's navbar show a live "model online/offline"
 // badge without ever exposing LOCAL_MODEL_API_KEY to the browser — the
 // key stays server-side, the frontend only ever sees a boolean. Uses
-// GET /v1/models (the standard OpenAI-compatible health-check path)
-// instead of a full chat completion, since it's cheap and doesn't
-// consume the model's context.
+// GET /health (llama-server's own unauthenticated health-check route,
+// same one used to verify the tunnel manually via curl) rather than a
+// full chat completion, since it's cheap and doesn't consume the
+// model's context or require the API key at all.
 router.get("/model-status", async (req, res) => {
   const modelUrl = process.env.LOCAL_MODEL_URL;
-  const modelApiKey = process.env.LOCAL_MODEL_API_KEY;
 
-  if (!modelUrl || !modelApiKey) {
+  if (!modelUrl) {
     return res.json({ online: false });
   }
 
@@ -60,8 +60,7 @@ router.get("/model-status", async (req, res) => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8_000);
 
-    const response = await fetch(`${modelUrl.replace(/\/$/, "")}/v1/models`, {
-      headers: { Authorization: `Bearer ${modelApiKey}` },
+    const response = await fetch(`${modelUrl.replace(/\/$/, "")}/health`, {
       signal: controller.signal,
     });
     clearTimeout(timeout);
