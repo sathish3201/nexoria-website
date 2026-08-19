@@ -83,6 +83,14 @@
 
   "projects": [
     {
+      "title": "Local Agent Pipeline — NL-to-SQL + RAG + MCP",
+      "description": "A fully local agentic pipeline over NASA mission data: natural-language-to-SQL generation validated by a read-only SqlGuard, semantic search over 5,500+ transcript chunks via ChromaDB, an MCP server exposing it all as callable tools, and a two-tier (memory + SQLite) cache. Built with FastAPI, containerized with Docker, and deployed on Render.",
+      "tech": ["FastAPI", "React", "ChromaDB", "MCP", "SQLite", "Docker"],
+      "github": "https://github.com/sathish3201/local-agent-pipeline",
+      "demo": "https://local-agent-pipeline-frontend.onrender.com",
+      "image": "gradient-flagship"
+    },
+    {
       "title": "Oracle ETL Warehouse Pipeline",
       "description": "A star-schema Oracle data warehouse with a PL/SQL package that loads staging data into dimension and fact tables, with per-row exception handling, error logging, and batch-run tracking modeled on production ETL support workflows.",
       "resumeDescription": "Star-schema Oracle data warehouse with a PL/SQL package loading staging data into dimension and fact tables, with per-row exception handling, error logging, and batch-run tracking modeled on production ETL support workflows",
