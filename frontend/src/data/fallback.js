@@ -135,7 +135,7 @@ export const fallbackBlog = [
     title: "How to Choose a Tech Stack for Your Startup MVP",
     excerpt: "A practical framework for picking a stack that lets you ship fast without boxing you in later.",
     date: "2026-07-01",
-    author: "Nexoria Technologies",
+    author: "EKADHANTHA Technologies",
     tags: ["Full-Stack", "Startups"],
   },
   {
@@ -143,7 +143,7 @@ export const fallbackBlog = [
     title: "ETL vs. ELT: Which Data Pipeline Pattern Fits Your Team?",
     excerpt: "The tradeoffs between transforming data before vs. after loading it into your warehouse.",
     date: "2026-06-15",
-    author: "Nexoria Technologies",
+    author: "EKADHANTHA Technologies",
     tags: ["Data Engineering"],
   },
   {
@@ -151,7 +151,7 @@ export const fallbackBlog = [
     title: "React Native vs. Native: What Actually Matters for Your App",
     excerpt: "A grounded look at when cross-platform makes sense and when it doesn't.",
     date: "2026-05-20",
-    author: "Nexoria Technologies",
+    author: "EKADHANTHA Technologies",
     tags: ["App Development"],
   },
 ];

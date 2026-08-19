@@ -1,7 +1,7 @@
 {
-  "name": "nexoria-frontend",
+  "name": "ekadhantha-frontend",
   "version": "1.0.0",
-  "description": "Nexoria Technologies marketing website — React frontend",
+  "description": "EKADHANTHA Technologies marketing website — React frontend",
   "type": "module",
   "scripts": {
     "dev": "vite",

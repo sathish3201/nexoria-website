@@ -43,13 +43,13 @@ const FAQ_ENTRIES = [
   {
     question: "How do I get support / contact you?",
     answer:
-      "This is a portfolio/demo project by Nexoria Technologies — for real support inquiries, please use the Contact page on the main Nexoria site.",
+      "This is a portfolio/demo project by EKADHANTHA Technologies — for real support inquiries, please use the Contact page on the main EKADHANTHA site.",
   },
 ];
 
 // Builds a compact, plain-text summary of the store's real product +
 // FAQ content to inject into the model's prompt — same pattern as
-// Nexoria's own chat route (backend/routes/chat.js in the parent site).
+// EKADHANTHA's own chat route (backend/routes/chat.js in the parent site).
 function buildKnowledgeSummary() {
   const products = readJSON("products.json");
 
@@ -63,7 +63,7 @@ function buildKnowledgeSummary() {
 }
 
 function buildSystemPrompt() {
-  return `You are the chat assistant on the Trailhead Goods demo storefront (a portfolio project by Nexoria Technologies). Answer visitor questions using ONLY the information below. Be concise (2-4 sentences unless more detail is clearly needed). If a question isn't covered by this information, say you don't have that specific detail. Never invent products, prices, or policies that aren't listed here.
+  return `You are the chat assistant on the Trailhead Goods demo storefront (a portfolio project by EKADHANTHA Technologies). Answer visitor questions using ONLY the information below. Be concise (2-4 sentences unless more detail is clearly needed). If a question isn't covered by this information, say you don't have that specific detail. Never invent products, prices, or policies that aren't listed here.
 
 ${buildKnowledgeSummary()}`;
 }

@@ -1,10 +1,10 @@
-# Nexoria Technologies — Business Website
+# EKADHANTHA Technologies — Business Website
 
 A full-stack marketing website (React + Node/Express) for an IT services business
 covering website development, full-stack development, app development, IT
 services/consulting, data pipeline engineering, and data analysis/BI.
 
-**Business name & tagline are placeholders — rename freely.** "Nexoria
+**Business name & tagline are placeholders — rename freely.** "EKADHANTHA
 Technologies" was suggested as a starting point; swap it (and the logo text in
 `frontend/src/components/Navbar.jsx` / `Footer.jsx`) for whatever you land on.
 

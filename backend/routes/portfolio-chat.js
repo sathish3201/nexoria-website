@@ -14,7 +14,7 @@ function readPortfolioData() {
   );
 }
 
-// Same lesson learned building the Nexoria chat route: a small local
+// Same lesson learned building the EKADHANTHA chat route: a small local
 // model (Gemma 3 1B, quantized) falls apart on a long, dense system
 // prompt. Only inject the entries relevant to what the visitor actually
 // asked, instead of the entire portfolio every time.

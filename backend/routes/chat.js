@@ -84,7 +84,7 @@ function scoreText(text, keywords) {
 // Builds a compact, plain-text summary of the site's real business
 // content (services, pricing, FAQ), trimmed to what's relevant to the
 // visitor's actual message — this is what lets a small local model
-// (Gemma/Phi) answer with accurate, Nexoria-specific information
+// (Gemma/Phi) answer with accurate, EKADHANTHA-specific information
 // without the context getting long enough to make it incoherent.
 function buildKnowledgeSummary(userMessage) {
   const services = readJSON("services.json");
@@ -123,7 +123,7 @@ function buildKnowledgeSummary(userMessage) {
 }
 
 function buildSystemPrompt(userMessage) {
-  return `You are Nexo AI, the chat assistant on the Nexoria Technologies website. Answer visitor questions using ONLY the business information below. Be concise (2-4 sentences unless more detail is clearly needed). If a question isn't covered by this information, say you don't have that specific detail and point the visitor to the Contact page. Never invent pricing, services, or policies that aren't listed here.
+  return `You are Nexo AI, the chat assistant on the EKADHANTHA Technologies website. Answer visitor questions using ONLY the business information below. Be concise (2-4 sentences unless more detail is clearly needed). If a question isn't covered by this information, say you don't have that specific detail and point the visitor to the Contact page. Never invent pricing, services, or policies that aren't listed here.
 
 ${buildKnowledgeSummary(userMessage)}`;
 }

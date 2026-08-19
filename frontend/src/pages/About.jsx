@@ -22,7 +22,7 @@ export default function About() {
     <>
       <section className="page-hero">
         <div className="container">
-          <h1>About Nexoria Technologies</h1>
+          <h1>About EKADHANTHA Technologies</h1>
           <p>
             An IT services and software development studio focused on
             full-stack, app, and data engineering work for growing
@@ -38,7 +38,7 @@ export default function About() {
             <h2 className="section-title">Software and data, under one roof</h2>
           </div>
           <p className="about-lead">
-            Nexoria Technologies was founded to close a gap we kept seeing:
+            EKADHANTHA Technologies was founded to close a gap we kept seeing:
             businesses would hire one team to build a website, another to
             build their app, and a third — often much later — to make sense
             of their data. We bring website development, full-stack and app

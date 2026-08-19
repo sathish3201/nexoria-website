@@ -17,7 +17,7 @@ export default function Navbar() {
     <header className="navbar">
       <div className="navbar-inner">
         <NavLink to="/" className="nav-logo" onClick={() => setOpen(false)}>
-          Nexoria<span>.</span>
+          EKADHANTHA<span>.</span>
         </NavLink>
 
         <nav className={`nav-links ${open ? "open" : ""}`}>

@@ -1,7 +1,7 @@
 {
-  "name": "nexoria-backend",
+  "name": "ekadhantha-backend",
   "version": "1.0.0",
-  "description": "Backend API for Nexoria Technologies website (contact form + content endpoints)",
+  "description": "Backend API for EKADHANTHA Technologies website (contact form + content endpoints)",
   "main": "server.js",
   "type": "module",
   "scripts": {

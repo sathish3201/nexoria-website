@@ -21,7 +21,7 @@ async function sendNotificationEmail(submission) {
   const resend = new Resend(apiKey);
   try {
     await resend.emails.send({
-      from: process.env.CONTACT_FROM_EMAIL || "Nexoria Website <onboarding@resend.dev>",
+      from: process.env.CONTACT_FROM_EMAIL || "EKADHANTHA Website <onboarding@resend.dev>",
       to: notifyTo,
       reply_to: submission.email,
       subject: `New inquiry: ${submission.service} — ${submission.name}`,

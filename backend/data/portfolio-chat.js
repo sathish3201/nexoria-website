@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { PORTFOLIO_DATA } from "../data/portfolioData.js";
 
-// Same lesson learned building the Nexoria chat route: a small local
+// Same lesson learned building the EKADHANTHA chat route: a small local
 // model (Gemma 3 1B, quantized) falls apart on a long, dense system
 // prompt. Only inject the entries relevant to what the visitor actually
 // asked, instead of the entire portfolio every time.
@@ -144,7 +144,7 @@ router.post("/", async (req, res) => {
 
   const systemPrompt = buildSystemPrompt(trimmedMessage);
 
-  // Same fix as Nexoria's chat route: the frontend's canned greeting
+  // Same fix as EKADHANTHA's chat route: the frontend's canned greeting
   // bubble must never be forwarded as if it were a real conversation
   // turn — Gemma's chat template requires the sequence to start with
   // "user" and strictly alternate, and a leading "assistant" turn (the

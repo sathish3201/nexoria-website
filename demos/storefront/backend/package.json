@@ -1,7 +1,7 @@
 {
-  "name": "nexoria-storefront-backend",
+  "name": "ekadhantha-storefront-backend",
   "version": "1.0.0",
-  "description": "Storefront demo API for Nexoria Technologies portfolio (products, cart checkout via Razorpay test mode, admin inventory)",
+  "description": "Storefront demo API for EKADHANTHA Technologies portfolio (products, cart checkout via Razorpay test mode, admin inventory)",
   "main": "server.js",
   "type": "module",
   "scripts": {

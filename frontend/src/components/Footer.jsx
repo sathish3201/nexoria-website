@@ -8,7 +8,7 @@ export default function Footer() {
       <div className="container">
         <div className="footer-inner">
           <div className="footer-col">
-            <h4>Nexoria Technologies</h4>
+            <h4>EKADHANTHA Technologies</h4>
             <p>
               Full-stack development, app development, IT services, and data
               engineering for growing businesses.
@@ -40,7 +40,7 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <span>&copy; {year} Nexoria Technologies. All rights reserved.</span>
+          <span>&copy; {year} EKADHANTHA Technologies. All rights reserved.</span>
           <span>Built with React &amp; Node.js.</span>
         </div>
       </div>

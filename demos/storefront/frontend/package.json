@@ -1,7 +1,7 @@
 {
-  "name": "nexoria-storefront-frontend",
+  "name": "ekadhantha-storefront-frontend",
   "version": "1.0.0",
-  "description": "Storefront demo frontend for Nexoria Technologies portfolio — React + Vite",
+  "description": "Storefront demo frontend for EKADHANTHA Technologies portfolio — React + Vite",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -24,7 +24,7 @@ export default function Home() {
             <span className="eyebrow">Full-Stack · App · Data Engineering</span>
             <h1>We build the software and data infrastructure your business runs on.</h1>
             <p className="lead">
-              Nexoria Technologies designs and ships websites, full-stack
+              EKADHANTHA Technologies designs and ships websites, full-stack
               applications, mobile apps, and data pipelines — with the IT
               support to keep it all running.
             </p>
@@ -104,7 +104,7 @@ export default function Home() {
         <div className="container">
           <div className="grid grid-2" style={{ alignItems: "center" }}>
             <div>
-              <span className="eyebrow">Why Nexoria</span>
+              <span className="eyebrow">Why EKADHANTHA</span>
               <h2 className="section-title">Built by people who ship, not just plan</h2>
               <p className="section-subtitle" style={{ marginBottom: 20 }}>
                 We keep teams small and communication direct. You talk to the

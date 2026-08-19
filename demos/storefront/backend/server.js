@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", service: "nexoria-storefront-backend" });
+  res.json({ status: "ok", service: "ekadhantha-storefront-backend" });
 });
 
 app.use("/api/products", productsRouter);
@@ -24,5 +24,5 @@ app.use("/api/admin", adminRouter);
 app.use("/api/chat", chatRouter);
 
 app.listen(PORT, () => {
-  console.log(`Nexoria storefront backend running on http://localhost:${PORT}`);
+  console.log(`EKADHANTHA storefront backend running on http://localhost:${PORT}`);
 });
