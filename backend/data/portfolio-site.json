@@ -26,7 +26,7 @@
 
   "about": {
     "paragraphs": [
-      "I'm an AI/ML engineer building agentic systems — from a fully local pipeline that turns natural language into validated SQL, retrieves answers via RAG over a vector database, and exposes it all as callable tools through an MCP server, to LLM-graded applications and n8n-based automation. Alongside this, I have 1.6+ years of production engineering experience at Accenture, working on Oracle-based data warehouse systems.",
+      "I'm an AI/ML engineer building agentic systems — from a fully local pipeline that turns natural language into validated SQL, retrieves answers via RAG over a vector database, and exposes it all as callable tools through an MCP server, to LLM-graded applications and n8n-based automation. Alongside this, I have nearly 2 years of production engineering experience at Accenture (Oct 2024 – Aug 2026), working on Oracle-based data warehouse systems.",
       "My flagship project, Local Agent Pipeline, combines natural-language-to-SQL generation (validated by a read-only SqlGuard before execution), semantic search over thousands of transcript chunks via ChromaDB, an MCP server that exposes these capabilities as tools any agent can call, and a two-tier memory + SQLite cache — built with FastAPI and deployed on Render. It's the clearest expression of how I think about AI engineering: retrieval and generation are only half the system — validation, caching, and tool interfaces are what make it production-ready.",
       "In my day-to-day role at Accenture, I work on Oracle-based data warehouse systems in a production ETL environment — building PL/SQL packages, tuning SQL performance, and resolving data-load failures within SLA. That same discipline around validation, exception handling, and reliability is what I apply to LLM pipelines: guardrails around generated SQL, structured retrieval instead of raw prompt stuffing, and caching layers that make agentic systems fast enough to actually use."
     ],
@@ -37,14 +37,14 @@
       "Production API design (FastAPI, Node.js, REST)"
     ],
     "stats": [
-      { "label": "Years Experience", "value": "1.6+" },
+      { "label": "Years Experience", "value": "~2" },
       { "label": "Daily/Weekly Jobs Supported", "value": "Multiple" },
       { "label": "Support Pod Size", "value": "3" },
       { "label": "Certifications", "value": "4" }
     ]
   },
 
-  "resumeSummary": "AI/ML engineer with 1.6+ years of production engineering experience at Accenture, building agentic AI systems end-to-end alongside production Oracle PL/SQL work. Built and deployed Local Agent Pipeline — a fully local agentic system combining NL-to-SQL generation validated by a read-only SqlGuard, semantic search over 5,500+ transcript chunks via ChromaDB (RAG), an MCP server exposing tools for agent use, and a two-tier memory + SQLite cache, built with FastAPI and deployed via Docker on Render. Also shipped a full MERN-stack SaaS mock interview platform with JWT authentication and live LLM-based grading (Groq/Llama), an Oracle ETL data warehouse pipeline with production-style exception handling, a documented SQL performance tuning case study, and an n8n + LLM incident-triage automation — all version-controlled on GitHub, several with live public deployments on Render. Comfortable taking AI-backed systems from local development to publicly accessible, production deployments end-to-end. Java Full Stack Certified (Wipro TalentNext), AI/ML Virtual Internship Certified; eager to grow with a team building applied AI systems.",
+  "resumeSummary": "AI/ML engineer with nearly 2 years of production engineering experience at Accenture (Oct 2024 – Aug 2026), building agentic AI systems end-to-end alongside production Oracle PL/SQL work. Built and deployed Local Agent Pipeline — a fully local agentic system combining NL-to-SQL generation validated by a read-only SqlGuard, semantic search over 5,500+ transcript chunks via ChromaDB (RAG), an MCP server exposing tools for agent use, and a two-tier memory + SQLite cache, built with FastAPI and deployed via Docker on Render. Also shipped a full MERN-stack SaaS mock interview platform with JWT authentication and live LLM-based grading (Groq/Llama), an Oracle ETL data warehouse pipeline with production-style exception handling, a documented SQL performance tuning case study, and an n8n + LLM incident-triage automation — all version-controlled on GitHub, several with live public deployments on Render. Comfortable taking AI-backed systems from local development to publicly accessible, production deployments end-to-end. Java Full Stack Certified (Wipro TalentNext), AI/ML Virtual Internship Certified; eager to grow with a team building applied AI systems.",
 
   "resumeSkillGroups": [
     { "label": "AI & Agentic Systems", "items": "RAG (ChromaDB), MCP (Model Context Protocol), NL-to-SQL Generation, LLM API Integration (Groq/Llama, Claude), Fine-Tuning, Structured Prompting" },
@@ -60,22 +60,22 @@
     {
       "role": "Package Development Associate, Oracle Development & Support",
       "company": "Accenture",
-      "period": "Oct 2024 — Present",
+      "period": "Oct 2024 — Aug 2026",
       "location": "Hybrid",
       "achievements": [
-        "Monitor enterprise data warehouse batch jobs and ETL schedules, proactively identifying and resolving missing files and ABENDs to sustain on-time production run completion.",
-        "Develop, debug, and deploy Oracle PL/SQL packages, procedures, functions, and triggers to deliver production code fixes, reducing recurring defects and cutting manual rework.",
-        "Analyze and tune SQL query performance using Optimizer Hints and DBMS_STATS, improving execution time on high-volume data warehouse queries.",
-        "Diagnose and resolve data-load and file-transfer failures via PuTTY and WinSCP, maintaining uninterrupted upstream and downstream ETL data flow across daily/weekly jobs.",
-        "Triage and resolve production support tickets within SLA as part of a 3-member hybrid support pod, using SQL Developer and VS Code for root-cause analysis and fixes.",
-        "Document recurring incidents and code-fix patterns in a shared knowledge base, reducing repeat-ticket volume and speeding resolution time for the wider team."
+        "Monitored enterprise data warehouse batch jobs and ETL schedules, proactively identifying and resolving missing files and ABENDs to sustain on-time production run completion.",
+        "Developed, debugged, and deployed Oracle PL/SQL packages, procedures, functions, and triggers to deliver production code fixes, reducing recurring defects and cutting manual rework.",
+        "Analyzed and tuned SQL query performance using Optimizer Hints and DBMS_STATS, improving execution time on high-volume data warehouse queries.",
+        "Diagnosed and resolved data-load and file-transfer failures via PuTTY and WinSCP, maintaining uninterrupted upstream and downstream ETL data flow across daily/weekly jobs.",
+        "Triaged and resolved production support tickets within SLA as part of a 3-member hybrid support pod, using SQL Developer and VS Code for root-cause analysis and fixes.",
+        "Documented recurring incidents and code-fix patterns in a shared knowledge base, reducing repeat-ticket volume and speeding resolution time for the wider team."
       ],
       "resumeAchievements": [
-        "Write and debug backend code (Oracle PL/SQL packages, procedures, functions, triggers) for production systems, reducing recurring defects by 25% through careful root-cause debugging.",
-        "Tune query performance to improve reliability and scalability, cutting execution time on high-volume queries by 35%.",
-        "Work with REST APIs and cross-system data flows to diagnose and resolve integration issues across 2 daily production jobs.",
-        "Collaborate with a 3-member hybrid team — clear written and verbal communication on issue status and fixes — achieving 95% SLA compliance and 97% on-time completion.",
-        "Document recurring issues and fixes in a shared knowledge base for team-wide use, reducing repeat issues by 20%."
+        "Wrote and debugged backend code (Oracle PL/SQL packages, procedures, functions, triggers) for production systems, reducing recurring defects by 25% through careful root-cause debugging.",
+        "Tuned query performance to improve reliability and scalability, cutting execution time on high-volume queries by 35%.",
+        "Worked with REST APIs and cross-system data flows to diagnose and resolve integration issues across 2 daily production jobs.",
+        "Collaborated with a 3-member hybrid team — clear written and verbal communication on issue status and fixes — achieving 95% SLA compliance and 97% on-time completion.",
+        "Documented recurring issues and fixes in a shared knowledge base for team-wide use, reducing repeat issues by 20%."
       ],
       "tech": ["Oracle PL/SQL", "SQL Developer", "DBMS_STATS", "PuTTY", "WinSCP", "Unix/Linux"]
     }
@@ -92,29 +92,29 @@
     },
     {
       "title": "Oracle ETL Warehouse Pipeline",
-      "description": "A star-schema Oracle data warehouse with a PL/SQL package that loads staging data into dimension and fact tables, with per-row exception handling, error logging, and batch-run tracking modeled on production ETL support workflows.",
+      "description": "A star-schema Oracle data warehouse with a PL/SQL package that loads staging data into dimension and fact tables, with per-row exception handling, error logging, and batch-run tracking modeled on production ETL support workflows. Live dashboard runs a real batch load end-to-end (React + FastAPI).",
       "resumeDescription": "Star-schema Oracle data warehouse with a PL/SQL package loading staging data into dimension and fact tables, with per-row exception handling, error logging, and batch-run tracking modeled on production ETL support workflows",
       "tech": ["Oracle PL/SQL", "ETL", "Data Warehousing", "SQL"],
       "github": "https://github.com/sathish3201/etl-warehouse-pipeline",
-      "demo": "#",
+      "demo": "https://sathish3201.github.io/etl-dashboard/warehouse",
       "image": "gradient-1"
     },
     {
       "title": "SQL Performance Tuning Case Study",
-      "description": "A documented before/after tuning exercise on a 2M-row Oracle table: DBMS_STATS, a targeted composite index, and Optimizer Hints, with EXPLAIN PLAN evidence for both states.",
+      "description": "A documented before/after tuning exercise on a 2M-row table: composite index design and fresh cardinality statistics, with real EXPLAIN QUERY PLAN and elapsed-time evidence for both states, executed live via the dashboard's FastAPI backend.",
       "resumeDescription": "Documented before/after tuning exercise on a 2M-row Oracle table using DBMS_STATS, a targeted composite index, and Optimizer Hints, with EXPLAIN PLAN evidence captured for both states",
       "tech": ["Oracle SQL", "DBMS_STATS", "Optimizer Hints", "EXPLAIN PLAN"],
       "github": "https://github.com/sathish3201/sql-performance-tuning-case-study",
-      "demo": "#",
+      "demo": "https://sathish3201.github.io/etl-dashboard/sql-tuning",
       "image": "gradient-2"
     },
     {
       "title": "ETL Incident Triage Automation",
-      "description": "An n8n workflow that classifies ETL job failures using Claude and drafts ready-to-paste incident tickets, automating the manual triage step in production data support.",
+      "description": "An n8n workflow that classifies ETL job failures using Claude and drafts ready-to-paste incident tickets, automating the manual triage step in production data support. Live dashboard visualizes the full workflow graph and sample data.",
       "resumeDescription": "n8n workflow that classifies ETL job failures using an LLM and drafts ready-to-paste incident tickets, automating the manual triage step in production data support",
       "tech": ["n8n", "Claude/LLM", "Workflow Automation"],
       "github": "https://github.com/sathish3201/etl-incident-triage-automation",
-      "demo": "#",
+      "demo": "https://sathish3201.github.io/etl-dashboard/incident-triage",
       "image": "gradient-3"
     },
     {
