@@ -31,7 +31,7 @@
       "In my day-to-day role at Accenture, I work on Oracle-based data warehouse systems in a production ETL environment — building PL/SQL packages, tuning SQL performance, and resolving data-load failures within SLA. That same discipline around validation, exception handling, and reliability is what I apply to LLM pipelines: guardrails around generated SQL, structured retrieval instead of raw prompt stuffing, and caching layers that make agentic systems fast enough to actually use."
     ],
     "focusAreas": [
-      "Agentic AI systems — RAG, tool-calling, MCP servers",
+      "Agentic AI systems — RAG, tool-calling, MCP servers, multi-agent orchestration (LangGraph)",
       "NL-to-SQL generation with validation guardrails",
       "LLM API integration & fine-tuning",
       "Production API design (FastAPI, Node.js, REST)"
@@ -47,7 +47,7 @@
   "resumeSummary": "AI/ML engineer with nearly 2 years of production engineering experience at Accenture (Oct 2024 – Aug 2026), building agentic AI systems end-to-end alongside production Oracle PL/SQL work. Built and deployed Local Agent Pipeline — a fully local agentic system combining NL-to-SQL generation validated by a read-only SqlGuard, semantic search over 5,500+ transcript chunks via ChromaDB (RAG), an MCP server exposing tools for agent use, and a two-tier memory + SQLite cache, built with FastAPI and deployed via Docker on Render. Also shipped a full MERN-stack SaaS mock interview platform with JWT authentication and live LLM-based grading (Groq/Llama), an Oracle ETL data warehouse pipeline with production-style exception handling, a documented SQL performance tuning case study, and an n8n + LLM incident-triage automation — all version-controlled on GitHub, several with live public deployments on Render. Comfortable taking AI-backed systems from local development to publicly accessible, production deployments end-to-end. Java Full Stack Certified (Wipro TalentNext), AI/ML Virtual Internship Certified; eager to grow with a team building applied AI systems.",
 
   "resumeSkillGroups": [
-    { "label": "AI & Agentic Systems", "items": "RAG (ChromaDB), MCP (Model Context Protocol), NL-to-SQL Generation, LLM API Integration (Groq/Llama, Claude), Fine-Tuning, Structured Prompting" },
+    { "label": "AI & Agentic Systems", "items": "RAG (ChromaDB), MCP (Model Context Protocol), Multi-Agent Orchestration (LangGraph), NL-to-SQL Generation, LLM API Integration (Groq/Llama, Claude), Fine-Tuning, Structured Prompting" },
     { "label": "Backend & APIs", "items": "FastAPI, Node.js & Express, RESTful API Development, Oracle PL/SQL & APEX, Python, Java" },
     { "label": "Data & Databases", "items": "SQLite, MongoDB (NoSQL), MySQL, PostgreSQL, Oracle SQL, Vector Search" },
     { "label": "Frontend", "items": "HTML, CSS, JavaScript, React (UI Development), Tailwind CSS" },
@@ -88,6 +88,15 @@
       "tech": ["FastAPI", "React", "ChromaDB", "MCP", "SQLite", "Docker"],
       "github": "https://github.com/sathish3201/local-agent-pipeline",
       "demo": "https://local-agent-pipeline-frontend.onrender.com",
+      "image": "gradient-flagship"
+    },
+    {
+      "title": "Job Search Agent — Multi-Agent LangGraph Pipeline",
+      "description": "A multi-agent job search system built on LangGraph: agents search across Remotive, Adzuna, and Apify-scraped LinkedIn/Naukri listings, an LLM ranking agent scores fit against the candidate's resume, and a deterministic ATS keyword-matching agent (mirroring how real applicant tracking systems screen resumes) filters and surfaces only the strongest matches. Includes on-demand resume tailoring toward a target ATS score with a truthfulness guardrail (never fabricates skills), live incremental result streaming, and a React dashboard.",
+      "resumeDescription": "Multi-agent job search pipeline (LangGraph): search agents across Remotive/Adzuna/Apify (LinkedIn, Naukri), an LLM fit-ranking agent, and a deterministic ATS keyword-matching agent mirroring real applicant tracking systems; on-demand ATS-targeted resume tailoring with a truthfulness guardrail, live streaming results, FastAPI + React, deployed on Render",
+      "tech": ["LangGraph", "Python", "FastAPI", "React", "SQLite", "Apify"],
+      "github": "https://github.com/sathish3201/job-search-agents",
+      "demo": "https://job-search-agent-web-5zfq.onrender.com",
       "image": "gradient-flagship"
     },
     {
@@ -161,6 +170,7 @@
       "items": [
         "RAG (ChromaDB, Vector Search)",
         "MCP (Model Context Protocol) Tool Servers",
+        "Multi-Agent Orchestration (LangGraph)",
         "NL-to-SQL Generation & Guardrails",
         "LLM API Integration (Groq/Llama, Claude)",
         "Fine-Tuning & Structured Prompting"
